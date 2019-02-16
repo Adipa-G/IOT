@@ -1,8 +1,8 @@
-#Raspberry Pi GPIO API
+# Raspberry Pi GPIO API
 
 This is a .net core Web API to control Raspberry Pi GPIO.
 
-##Raspberry Pi setup
+## Raspberry Pi setup
 
 The operating system used was DietPi. Follow [instructions](https://dietpi.com/phpbb/viewtopic.php?f=8&t=9#p9) to install the operating system. Make sure to,
 
@@ -13,7 +13,7 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
      * Password - < your password : default is dietpi if you have not changed it >
      * IP Address - Connect a keyboard and a display and login to the device and it'll displayed. You can also use your router management interface to get the IP address.
 
-#Installing .Net Core
+## Installing .Net Core
 
 1. Connect to the Raspberry Pi using SSH.
 2. Run following commands.
@@ -27,7 +27,7 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
      sudo ln -s /opt/dotnet/dotnet /usr/local/bin
 ```
 
-#Deploying the application
+## Deploying the application
 
 1. Install [PuTTY](https://www.putty.org/).
 2. Checkout the code.
@@ -35,7 +35,7 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
 4. Once command is executed, run `dotnet SelfHost.dll` command, using the SSH terminal from the home folder of the Raspberry Pi.
 
 
-#Testing it out
+## Testing it out
 
 1. Connect an LED to GPIO pins as below.
 2. Download and install the Postman
@@ -46,6 +46,6 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
 
 
 
-###References
+### References
 
 https://jeremylindsayni.wordpress.com/2017/07/23/running-a-net-core-2-app-on-raspbian-jessie-and-deploying-to-the-pi-with-cake/
