@@ -2,6 +2,9 @@
 
 This is a .net core Web API to control Raspberry Pi GPIO.
 
+![Intro](https://github.com/Adipa-G/IOT/blob/master/GpioWebApi/images/intro.gif)
+
+
 ## Raspberry Pi setup
 
 The operating system used was DietPi. Follow [instructions](https://dietpi.com/phpbb/viewtopic.php?f=8&t=9#p9) to install the operating system. Make sure to,
@@ -38,6 +41,17 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
 ## Testing it out
 
 1. Connect an LED to GPIO pins as below.
+
+![Intro](https://github.com/Adipa-G/IOT/blob/master/GpioWebApi/images/wiring.JPG)
+
+<pre>
++--------------------+
+|X                 X |
+|                    |
++--------------------+
+</pre>
+
+
 2. Download and install the Postman
 3. Send a `POST` request to `http://<ip address>:5000/api/pins/2/1`. This will turn the LED on. The url format is  `http://<ip address>:5000/api/pins/<GPIO Pin No>/<State>`. 
 4. Send another `POST` request to `http://<ip address>:5000/api/pins/2/0`. This will turn the LED off.
