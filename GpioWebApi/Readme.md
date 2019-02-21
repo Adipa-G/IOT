@@ -40,7 +40,7 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
 
 ## Testing it out
 
-1. Connect an LED to GPIO pins as below.
+1. Connect an LED to GPIO pins as below. (See the GPIO marked in with - and + in the drawing)
 
 ![Intro](https://github.com/Adipa-G/IOT/blob/master/GpioWebApi/images/wiring.JPG)
 
@@ -61,7 +61,7 @@ The operating system used was DietPi. Follow [instructions](https://dietpi.com/p
 +--------+                                                       |
 +--------+                                                       |
 |        |             +---+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-----+ |
-|  USB   |             |X| | | | | | | | | | | | | | | | | |X| | |
+|  USB   |             |-| | | | | | | | | | | | | | | | | |+| | |
 |        |             +---------------------------------------+ |
 +--------+             | | | | | | | | | | | | | | | | | | | | | |
 |                      +---------------------------------------+ |
