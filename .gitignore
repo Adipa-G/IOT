@@ -2,3 +2,6 @@
 */.vscode/*
 **/bin/*
 **/obj/*
+**/.vs/**
+/ESP32/first/packages/*
+/ESP32/first/uniflash/*
