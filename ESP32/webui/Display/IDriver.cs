@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace First.Display
+﻿namespace WebUI.Display
 {
     public interface IDriver
     {
@@ -8,7 +6,9 @@ namespace First.Display
 
         int Width { get; }
 
-        int[] GetCharSize(int scaleFactor);
+        int GetCharWidth(int scaleFactor);
+
+        int GetCharHeight(int scaleFactor);
 
         void Reset();
 
@@ -22,7 +22,7 @@ namespace First.Display
 
         void DrawFilledRectangle(int x, int y, int width, int height, Color color);
 
-        void DrawLetter(int x, int y, char letter, Color color, int scaleFactor);
+        void DrawLetters(int x, int y, char[] letters, Color color, int scaleFactor);
 
         void DrawImage(int x, int y, int width, int height, byte[] pixels);
     }

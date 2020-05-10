@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace First.Display.DriverST7789V
+﻿namespace WebUI.Display.DriverST7789V
 {
     internal class Commands
     {

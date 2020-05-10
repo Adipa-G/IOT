@@ -3,5 +3,5 @@
 **/bin/*
 **/obj/*
 **/.vs/**
-/ESP32/first/packages/*
-/ESP32/first/uniflash/*
+/ESP32/webui/packages/*
+/ESP32/webui/uniflash/*

@@ -12,14 +12,14 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace>First</RootNamespace>
-    <AssemblyName>First</AssemblyName>
+    <RootNamespace>WebUI</RootNamespace>
+    <AssemblyName>WebUI</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Display\Color.cs" />
-    <Compile Include="Display\Console.cs" />
+    <Compile Include="Display\DisplayConsole.cs" />
     <Compile Include="Display\Display.cs" />
     <Compile Include="Display\DriverST7789V\Commands.cs" />
     <Compile Include="Display\Font.cs" />

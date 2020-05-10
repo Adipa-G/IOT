@@ -2,10 +2,10 @@
 using System.Threading;
 using Windows.Devices.Gpio;
 using Windows.Devices.Spi;
-using First.Display;
 using nanoFramework.Hardware.Esp32;
+using WebUI.Display;
 
-namespace nanoFramework.Driver
+namespace WebUI
 {
     /* source code taken from there 
      * https://github.com/bauland/TinyClrLib/blob/master/Modules/Gadgeteer/DisplayN18/

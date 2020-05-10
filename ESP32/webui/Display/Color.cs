@@ -1,4 +1,4 @@
-﻿namespace First.Display
+﻿namespace WebUI.Display
 {
     public class Color
     {

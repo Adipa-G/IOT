@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace First.Display
+﻿namespace WebUI.Display
 {
     public class Display
     {
@@ -16,6 +14,12 @@ namespace First.Display
         public int Width => _driver != null ? _driver.Width : 0;
 
         public int Height => _driver != null ? _driver.Height : 0;
+
+        public int GetCharWidth(TextSize textSize) =>
+            _driver != null ? _driver.GetCharWidth(GetScaleFactor(textSize)) : 1;
+
+        public int GetCharHeight(TextSize textSize) =>
+            _driver != null ? _driver.GetCharHeight(GetScaleFactor(textSize)) : 1;
 
         public void Initialize()
         {
@@ -55,12 +59,13 @@ namespace First.Display
 
         public void DrawText(int x, int y, string text, Color color, TextSize size)
         {
-            var scaleFactor = size == TextSize.Small ? 1: size == TextSize.Medium? 2 : 3;
-            var letterSize = _driver.GetCharSize(scaleFactor);
-            
+            var scaleFactor = GetScaleFactor(size);
+            var letterWidth = _driver.GetCharWidth(scaleFactor);
+            var letterHeight = _driver.GetCharHeight(scaleFactor);
+
             var lines = text.Split(new char[]{'\n','\r'});
-            var maxCols = (_driver.Width - x) / letterSize[0];
-            var maxRows = (_driver.Height - y) / letterSize[1];
+            var maxCols = (_driver.Width - x) / letterWidth;
+            var maxRows = (_driver.Height - y) / letterHeight;
             
             for (var rowIndex = 0; rowIndex < lines.Length; rowIndex++)
             {
@@ -70,18 +75,18 @@ namespace First.Display
                 var line = lines[rowIndex];
                 var chars = line.Trim().Length == 0 ? new char[] {' '} :
                     line.Length > maxCols ? line.Substring(0, maxCols).ToCharArray() : line.ToCharArray();
-            
-                for (var colIndex = 0; colIndex < chars.Length; colIndex++)
-                {
-                    char c = chars[colIndex];
-                    _driver.DrawLetter(x + letterSize[0] * colIndex, y + letterSize[1] * rowIndex, c, color, scaleFactor);
-                }
+                _driver.DrawLetters(x, y + letterHeight * rowIndex, chars, color, scaleFactor);
             }
         }
 
         public void DrawImage(int x, int y, int width, int height, byte[] pixels)
         {
             _driver.DrawImage(x, y, width, height, pixels);
+        }
+
+        private int GetScaleFactor(TextSize size)
+        {
+            return size == TextSize.Small ? 1 : size == TextSize.Medium ? 2 : 3;
         }
     }
 }

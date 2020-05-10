@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CSharp.BlankApplication")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ESP32.WebUI")]
+[assembly: AssemblyDescription("Web UI for ESP32")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CSharp.BlankApplication")]
-[assembly: AssemblyCopyright("Copyright © ")]
+[assembly: AssemblyProduct("ESP32.WebUI")]
+[assembly: AssemblyCopyright("Copyright © Adipa-G")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -4,7 +4,7 @@ using Windows.Devices.Gpio;
 using Windows.Devices.Spi;
 using nanoFramework.Hardware.Esp32;
 
-namespace First.Display.DriverST7789V
+namespace WebUI.Display.DriverST7789V
 {
     public class ST7789V : IDriver
     {
@@ -74,10 +74,8 @@ namespace First.Display.DriverST7789V
         public int Height => _height;
         public int Width => _width;
 
-        public int[] GetCharSize(int scaleFactor)
-        {
-            return new[] {6 * scaleFactor, 10 * scaleFactor};
-        }
+        public int GetCharWidth(int scaleFactor) => 6 * scaleFactor;
+        public int GetCharHeight(int scaleFactor) => 8 * scaleFactor;
 
         public void Reset()
         {
@@ -187,33 +185,25 @@ namespace First.Display.DriverST7789V
             DrawImage(data);
         }
 
-        public void DrawLetter(int x, int y, char letter, Color color, int scaleFactor)
+        public void DrawLetters(int x, int y, char[] letters, Color color, int scaleFactor)
         {
-            byte[] dataBuffer = scaleFactor == 1 ? new byte[80] : scaleFactor == 2 ? new byte[320] : new byte[1280];
-            
-            var index = 5 * (letter - 32);
+            var totalLetters = letters.Length;
+            var dataBuffer = new byte[80 * totalLetters];
             var upper = (byte)(color.As565 >> 8);
             var lower = (byte)(color.As565 >> 0);
-            
-            var i = 0;
-            for (var j = 1; j <= 64; j *= 2)
-            {
-                for (var k = 0; k < scaleFactor; k++)
-                {
-                    for (var l = 0; l < 5; l++)
-                    {
-                        for (var m = 0; m < scaleFactor; m++)
-                        {
-                            var show = (Font.Fonts[index + l] & j) != 0;
 
-                            dataBuffer[i++] = show ? upper : (byte)0x00;
-                            dataBuffer[i++] = show ? lower : (byte)0x00;
-                        }
-                    }
-                }
+            for (var letterIndex = 0; letterIndex < totalLetters; letterIndex++)
+            {
+                var letter = letters[letterIndex];
+                DrawLetter(letter, letterIndex, totalLetters, dataBuffer, upper, lower);
             }
 
-            SetClip(x, y, 5 * scaleFactor, 8 * scaleFactor);
+            if (scaleFactor > 1)
+            {
+                dataBuffer = ScaleUp(dataBuffer, 8, 5 * totalLetters, scaleFactor, scaleFactor);
+            }
+
+            SetClip(x, y, 5 * scaleFactor * totalLetters, 8 * scaleFactor);
             DrawImage(dataBuffer);
         }
 
@@ -310,11 +300,68 @@ namespace First.Display.DriverST7789V
             _buffer4[3] = (byte)(second % 255);
         }
 
-        // private void SetBuffer2(int value)
-        // {
-        //     _buffer2[0] = (byte) (value / 255);
-        //     _buffer2[1] = (byte) (value % 255);
-        // }
+        private void DrawLetter(char letter, int letterIndex, int totalLetters, byte[] dataBuffer, byte upper, byte lower)
+        {
+            var font = Font.Fonts[letter - 32];
+
+            var yBit = 1;
+            for (var letterY = 0; letterY < 8; letterY++)
+            {
+                for (var letterX = 0; letterX < 5; letterX++)
+                {
+                    var bufferLocation = 2 * ((letterIndex * 5) + (letterY * 5 * totalLetters) + letterX);
+                    var show = (font[letterX] & yBit) != 0;
+
+                    dataBuffer[bufferLocation] = show ? upper : (byte)0x00;
+                    dataBuffer[bufferLocation + 1] = show ? lower : (byte)0x00;
+                }
+
+                yBit *= 2;
+            }
+        }
+        
+        private byte[] ScaleUp(byte[] dataBuffer, int orgHeight, int orgWidth, int yUp, int xUp)
+        {
+            var newHeight = orgHeight * yUp;
+            var newWidth = orgWidth * xUp;
+            var newBuffer = new byte[newHeight * newWidth * 2];
+
+            for (int charIndex = 0; charIndex < dataBuffer.Length; charIndex += 2)
+            {
+                var y = charIndex / (2 * orgWidth);
+                var x = charIndex % (2 * orgWidth);
+
+                for (int yScale = 0; yScale < yUp; yScale++)
+                {
+                    for (int xScale = 0; xScale < xUp; xScale++)
+                    {
+                        var newLocation = 2 * (newWidth * (y + yScale) + x + xScale);
+                        newBuffer[newLocation] = dataBuffer[charIndex];
+                        newBuffer[newLocation + 1] = dataBuffer[charIndex + 1];
+                    }
+                }
+            }
+            //
+            //
+            // for (int y = 0; y < orgHeight; y++)
+            // {
+            //     for (int yScale = 0; yScale < yUp; yScale++)
+            //     {
+            //         for (int x = 0; x < orgWidth; x++)
+            //         {
+            //             for (int xScale = 0; xScale < xUp; xScale++)
+            //             {
+            //                 var orgLocation = 2 * (orgWidth * y + x);
+            //                 var newLocation = 2 * (newWidth * (y + yScale) + x + xScale);
+            //                 newBuffer[newLocation] = dataBuffer[orgLocation];
+            //                 newBuffer[newLocation + 1] = dataBuffer[orgLocation + 1];
+            //             }
+            //         }
+            //     }
+            // }
+
+            return newBuffer;
+        }
 
         private void ValidateAndThrow(int x, int y, int width, int height)
         {

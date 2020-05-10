@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Threading;
 using Windows.Devices.Gpio;
-using First.Display;
-using First.Display.DriverST7789V;
-using nanoFramework.Driver;
-using nanoframework.i2c.SS1306;
+using nanoFramework.Hardware.Esp32;
+using WebUI.Display;
+using WebUI.Display.DriverST7789V;
 
 // using nanoFramework.Companion.Drivers.Display;
 
 // using nanoFramework.Companion.Drivers.Display;
 
-namespace First
+namespace WebUI
 {
     public class Program
     {
@@ -52,12 +51,17 @@ namespace First
             display.SetOrientation(Orientation.InvertedLandacape);
             display.DrawRectangle(10,10,50, 50, Color.Cyan, false);
             display.DrawImage(70, 10, 50, 50, CSharpIcon.GetBytes());
-            display.DrawText(10, 80, "This is a test \nA \nB", Color.Green, TextSize.Small);
+            //display.DrawText(10, 80, "This is a test \nA \nB", Color.Green, TextSize.Small);
+
+            display.DrawRectangle(125, 5, 110, 110, Color.Cyan, false);
+            var console = new DisplayConsole(display, 130, 10, 100, 100, TextSize.Small);
+
+
             
             for (int i = 0; i < 1000; i++)
             {
+                console.Log("row " + i + " __________________________++++++++++++++++++++++++++++++++++++___________________________________________", i %5 == 0 ? Color.Red : Color.Green);
                 Thread.Sleep(1000);
-                display.DrawText(10, 80, $"This is a test \nA {i}\nB {i}", Color.Red, TextSize.Small);
             }
 
 

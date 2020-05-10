@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace First.Display
+﻿namespace WebUI.Display
 {
     public enum TextSize
     {

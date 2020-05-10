@@ -14,12 +14,11 @@
 //************
 
 using System;
-using Windows.Devices.I2c;
 using System.Threading;
+using Windows.Devices.I2c;
 using nanoFramework.Hardware.Esp32;
 
-
-namespace nanoframework.i2c.SS1306
+namespace WebUI
 {
 
     class OLED
