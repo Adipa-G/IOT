@@ -14,7 +14,9 @@ namespace WebUI.Display.DriverST7789V
         private const byte TFT_MAD_MV = 0x20;
         private const byte TFT_MAD_ML = 0x10;
         private const int DefaultWidth = 135;
-        private const int DefaultHeight = 240;
+        private const int DefaultHeight = 239;
+        private const int TextWidth = 5;
+        private const int TextHeight = 8;
         private const Orientation DefaultOrientation = Orientation.Portrait;
         
         private readonly SpiDevice _spi;
@@ -74,8 +76,8 @@ namespace WebUI.Display.DriverST7789V
         public int Height => _height;
         public int Width => _width;
 
-        public int GetCharWidth(int scaleFactor) => 6 * scaleFactor;
-        public int GetCharHeight(int scaleFactor) => 8 * scaleFactor;
+        public int GetCharWidth(int scaleFactor) => TextWidth * scaleFactor;
+        public int GetCharHeight(int scaleFactor) => TextHeight * scaleFactor;
 
         public void Reset()
         {
@@ -129,7 +131,7 @@ namespace WebUI.Display.DriverST7789V
             SetClip(0, 0, Width, Height);
 
             WriteCommand(Commands.ST7789_RAMWR);
-            for (int i = 0; i < Height * 2; i++)
+            for (int i = 0; i <= Height * 2; i++)
                 WriteData(clearBuffer);
         }
 
@@ -173,8 +175,6 @@ namespace WebUI.Display.DriverST7789V
         
         public void DrawFilledRectangle(int x, int y, int width, int height, Color color)
         {
-            SetClip(x, y, width, height);
-
             var data = new byte[width * height * 2];
             for (var i = 0; i < data.Length; i += 2)
             {
@@ -182,13 +182,14 @@ namespace WebUI.Display.DriverST7789V
                 data[i + 1] = (byte)((color.As565 >> 0) & 0xFF);
             }
 
+            SetClip(x, y, width , height);
             DrawImage(data);
         }
 
         public void DrawLetters(int x, int y, char[] letters, Color color, int scaleFactor)
         {
             var totalLetters = letters.Length;
-            var dataBuffer = new byte[80 * totalLetters];
+            var dataBuffer = new byte[TextWidth * TextHeight * 2 * totalLetters];
             var upper = (byte)(color.As565 >> 8);
             var lower = (byte)(color.As565 >> 0);
 
@@ -200,10 +201,15 @@ namespace WebUI.Display.DriverST7789V
 
             if (scaleFactor > 1)
             {
-                dataBuffer = ScaleUp(dataBuffer, 8, 5 * totalLetters, scaleFactor, scaleFactor);
+                dataBuffer = ScaleUp(dataBuffer, TextHeight, TextWidth * totalLetters, scaleFactor, scaleFactor);
             }
 
-            SetClip(x, y, 5 * scaleFactor * totalLetters, 8 * scaleFactor);
+            var clipWidth = TextWidth * scaleFactor * totalLetters;
+            var clipHeight = TextHeight * scaleFactor;
+            var adjstment = (x + clipWidth) > (Width - 20) && _orientation == Orientation.Landscape || _orientation == Orientation.InvertedLandacape
+                ? -1
+                : 0;
+            SetClip(x, y, clipWidth + adjstment, clipHeight);
             DrawImage(dataBuffer);
         }
 
@@ -305,11 +311,11 @@ namespace WebUI.Display.DriverST7789V
             var font = Font.Fonts[letter - 32];
 
             var yBit = 1;
-            for (var letterY = 0; letterY < 8; letterY++)
+            for (var letterY = 0; letterY < TextHeight; letterY++)
             {
-                for (var letterX = 0; letterX < 5; letterX++)
+                for (var letterX = 0; letterX < TextWidth; letterX++)
                 {
-                    var bufferLocation = 2 * ((letterIndex * 5) + (letterY * 5 * totalLetters) + letterX);
+                    var bufferLocation = 2 * ((letterIndex * TextWidth) + (letterY * TextWidth * totalLetters) + letterX);
                     var show = (font[letterX] & yBit) != 0;
 
                     dataBuffer[bufferLocation] = show ? upper : (byte)0x00;
@@ -329,37 +335,19 @@ namespace WebUI.Display.DriverST7789V
             for (int charIndex = 0; charIndex < dataBuffer.Length; charIndex += 2)
             {
                 var y = charIndex / (2 * orgWidth);
-                var x = charIndex % (2 * orgWidth);
+                var x = (charIndex % (2 * orgWidth)) / 2;
 
                 for (int yScale = 0; yScale < yUp; yScale++)
                 {
                     for (int xScale = 0; xScale < xUp; xScale++)
                     {
-                        var newLocation = 2 * (newWidth * (y + yScale) + x + xScale);
+                        var newLocation = 2 * (newWidth * (yUp * y + yScale) + xUp * x + xScale);
                         newBuffer[newLocation] = dataBuffer[charIndex];
                         newBuffer[newLocation + 1] = dataBuffer[charIndex + 1];
                     }
                 }
             }
-            //
-            //
-            // for (int y = 0; y < orgHeight; y++)
-            // {
-            //     for (int yScale = 0; yScale < yUp; yScale++)
-            //     {
-            //         for (int x = 0; x < orgWidth; x++)
-            //         {
-            //             for (int xScale = 0; xScale < xUp; xScale++)
-            //             {
-            //                 var orgLocation = 2 * (orgWidth * y + x);
-            //                 var newLocation = 2 * (newWidth * (y + yScale) + x + xScale);
-            //                 newBuffer[newLocation] = dataBuffer[orgLocation];
-            //                 newBuffer[newLocation + 1] = dataBuffer[orgLocation + 1];
-            //             }
-            //         }
-            //     }
-            // }
-
+            
             return newBuffer;
         }
 

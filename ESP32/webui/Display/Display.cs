@@ -26,7 +26,6 @@
             _driver.Reset();
             _driver.Initialize(_orientation);
             _driver.Clear();
-            
         }
 
         public void TurnOn()
@@ -49,12 +48,12 @@
         {
             if (isFilled)
             {
-                _driver.DrawFilledRectangle(x, y, width, height, color);
+                _driver.DrawFilledRectangle(x, y, width - 1, height - 1, color);
             }
-            _driver.DrawFilledRectangle(x,y,width,1,color);
+            _driver.DrawFilledRectangle(x,y,width,1, color);
             _driver.DrawFilledRectangle(x, y, 1, height, color);
-            _driver.DrawFilledRectangle(x + width, y, 1, height, color);
-            _driver.DrawFilledRectangle(x, y + height, width,1, color);
+            _driver.DrawFilledRectangle(x + width - 1, y, 1, height, color);
+            _driver.DrawFilledRectangle(x, y + height - 1, width,1, color);
         }
 
         public void DrawText(int x, int y, string text, Color color, TextSize size)
@@ -64,8 +63,8 @@
             var letterHeight = _driver.GetCharHeight(scaleFactor);
 
             var lines = text.Split(new char[]{'\n','\r'});
-            var maxCols = (_driver.Width - x) / letterWidth;
-            var maxRows = (_driver.Height - y) / letterHeight;
+            var maxCols = (_driver.Width - x - 1) / letterWidth;
+            var maxRows = (_driver.Height - y - 1) / letterHeight;
             
             for (var rowIndex = 0; rowIndex < lines.Length; rowIndex++)
             {

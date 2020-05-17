@@ -11,9 +11,11 @@
         private int _charHeight;
         private TextSize _textSize;
 
-        private string[] messages = new string[50];
-        private Color[] colors = new Color[50];
+        private string[] messages;
+        private Color[] colors;
+        private int minMessages = 0;
         private int messageCount = 0;
+        private int lastDraw = 0;
 
         public DisplayConsole(Display display,
             int x, 
@@ -30,6 +32,9 @@
             _textSize = textSize;
             _charWidth = _display.GetCharWidth(textSize);
             _charHeight = _display.GetCharHeight(textSize);
+            messages = new string[(_height - 1) / _charHeight];
+            minMessages = (messages.Length / 4);
+            colors = new Color[(_height - 1) / _charHeight];
         }
 
         public void Log(string message, Color color)
@@ -50,36 +55,40 @@
         {
             if (messageCount == messages.Length)
             {
-                for (int i = 1; i < messages.Length; i++)
+                for (int i = 0; i <= minMessages; i++)
                 {
-                    messages[i - 1] = messages[i];
-                    colors[i - 1] = colors[i];
+                    messages[minMessages - i] = messages[messages.Length - 1 - i];
+                    colors[minMessages - i] = colors[messages.Length - 1 - i];
                 }
-                messages[messages.Length - 1] = message;
-                colors[messages.Length - 1] = color;
+                lastDraw = 0;
+                messageCount = minMessages + 1;
             }
-            else
-            {
-                messages[messageCount] = message;
-                colors[messageCount] = color;
-                messageCount++;
-            }
+
+            messages[messageCount] = message;
+            colors[messageCount] = color;
+            messageCount++;
         }
 
         private void Draw()
         {
-            var maxCols = _width / _charWidth;
-            var maxRows = _height / _charHeight;
+            if (lastDraw == 0)
+            {
+                _display.DrawRectangle(_x,_y,_width,_height,Color.Black,true);
+            }
+
+            var maxCols = (_width - 1) / _charWidth;
+            var maxRows = (_height - 1) / _charHeight;
             var startRow = messageCount - maxRows;
             if (startRow < 0)
                 startRow = 0;
 
-            for (var index = 0; index < maxRows; index++)
+            for (var index = lastDraw; index < maxRows; index++)
             {
                 var arrayIndex = startRow + index;
                 var message = messages[arrayIndex];
                 if (arrayIndex >= messageCount)
                 {
+                    lastDraw = arrayIndex;
                     return;
                 }
 
