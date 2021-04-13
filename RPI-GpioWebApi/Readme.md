@@ -2,7 +2,7 @@
 
 This is a .net core Web API to control Raspberry Pi GPIO.
 
-![Intro](https://github.com/Adipa-G/IOT/blob/master/GpioWebApi/images/intro.gif)
+![Intro](https://github.com/Adipa-G/IOT/blob/master/RPI-GpioWebApi/images/intro.gif)
 
 
 ## Raspberry Pi setup
