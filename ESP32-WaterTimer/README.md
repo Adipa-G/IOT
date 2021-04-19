@@ -1,6 +1,6 @@
 
-# ESP32 Web API Project (In Progress)
-This web api project use micropython.
+# ESP32 Water Timer (In Progress)
+This is a water timer/scheduler project using micropython.
 
 ## Prerequisites
  1. Install [Python](https://www.python.org/downloads/) and ensure the python and pip package manager is in the path variables.
