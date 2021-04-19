@@ -17,30 +17,40 @@ locatorinit.LocatorInit()
 
 screen = locator.screen
 power_manager = locator.power_manager
-wlan_setup =  locator.wlan_setup
+io_service = locator.io_service
+wlan_setup = locator.wlan_setup
 server = locator.server
+
 
 def connect_to_wlan_and_start_server():
     connected = wlan_setup.connect_to_configured_wlan()
-    if (connected == True):
+    if connected == True:
         server.start()
+
 
 def right_button_event():
     power_manager.reset_screen_sleep()
     screen.turn_on_screen()
     wlan_setup.start_config_mode(True)
     server.start()
-    screen.draw_text("r-pressed" +  str(time.ticks_ms()), FONT_LEFT,200, displayDriver.GREEN)
+    screen.draw_text(
+        "r-pressed" + str(time.ticks_ms()), FONT_LEFT, 200, displayDriver.GREEN
+    )
+
 
 def left_button_event():
     power_manager.reset_screen_sleep()
     screen.turn_on_screen()
     wlan_setup.end_config_mode()
     connect_to_wlan_and_start_server()
-    screen.draw_text("l-pressed" +  str(time.ticks_ms()), FONT_LEFT,210, displayDriver.GREEN)
+    screen.draw_text(
+        "l-pressed" + str(time.ticks_ms()), FONT_LEFT, 210, displayDriver.GREEN
+    )
+
 
 right_button = button.Button(RIGHT_BUTTON_PIN, PIN_HIGH, right_button_event)
 left_button = button.Button(LEFT_BUTTON_PIN, PIN_HIGH, left_button_event)
+
 
 async def main_loop():
     while True:
@@ -48,6 +58,8 @@ async def main_loop():
         await left_button.handle_event()
         await power_manager.manage_power()
         await wlan_setup.reconnect_if_dropped()
+        await io_service.run_schedule()
+
 
 connect_to_wlan_and_start_server()
 loop = uasyncio.get_event_loop()
