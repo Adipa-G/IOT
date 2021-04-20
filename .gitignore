@@ -5,3 +5,5 @@
 **/.vs/**
 /ESP32/webui/packages/*
 /ESP32/webui/uniflash/*
+**/node_modules/**
+**/.vscode/**
