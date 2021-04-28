@@ -66,9 +66,9 @@ class IoService:
                 start_minute_of_day = start_minute_of_day + 24 * 60
 
         if (
-            current_minute_of_day >= start_minute_of_day
-            and current_minute_of_day < end_minute_of_day
+            current_minute_of_day == start_minute_of_day
+            and current_minute_of_day == end_minute_of_day - 1
         ):
             self.set_pin_state(pin, True)
-        else:
+        elif current_minute_of_day == end_minute_of_day:
             self.set_pin_state(pin, False)
