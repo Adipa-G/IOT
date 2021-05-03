@@ -1,0 +1,14 @@
+.loader {
+    position: relative;
+    left: 50%;
+    top: 40vh;
+}
+
+.widget {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.time {
+    font-size: 12px;
+}
