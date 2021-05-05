@@ -22,8 +22,11 @@ const Menu = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link eventKey="1" as={Link} to="/timer-status">
-                            Status
+                        <Nav.Link eventKey="1" as={Link} to="/dashboard">
+                            Dashboard
+                        </Nav.Link>
+                        <Nav.Link eventKey="2" as={Link} to="/pin-config">
+                            IO Schedule Configuration
                         </Nav.Link>
                         {
                             health.wlanConfigMode ?
@@ -32,9 +35,6 @@ const Menu = () => {
                                 </Nav.Link>
                                 : null
                         }
-                        <Nav.Link eventKey="100" as={Link} to="/game-select" data-testid="menu-game-select">
-                            Select Game
-                        </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

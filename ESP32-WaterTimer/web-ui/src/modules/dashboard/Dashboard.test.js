@@ -2,12 +2,12 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 
 import ApiService from '../../services/ApiService';
 
-import TimerStatus from './TimerStatus';
+import Dashboard from './Dashboard';
 
 const renderComponent = () => {
 
     render(
-        <TimerStatus></TimerStatus>
+        <Dashboard></Dashboard>
     );
 }
 
@@ -21,7 +21,7 @@ describe('when loading', () => {
         await act(async () => { renderComponent(); });
 
         await waitFor(() => {
-            expect(screen.queryByTestId('timer-status-loading-state')).toBeInTheDocument();
+            expect(screen.queryByTestId('dashboard-loading-state')).toBeInTheDocument();
         });
     });
 })
@@ -35,7 +35,7 @@ describe('when loading error', () => {
         await act(async () => { renderComponent(); });
 
         await waitFor(() => {
-            expect(screen.queryByTestId('timer-status-error-state')).toBeInTheDocument();
+            expect(screen.queryByTestId('dashboard-error-state')).toBeInTheDocument();
         });
     });
 })
@@ -65,10 +65,10 @@ describe('when loaded', () => {
         await act(async () => { renderComponent(); });
 
         await waitFor(() => {
-            expect(screen.queryByTestId('timer-status-memory-widget')).toHaveTextContent('62.23 kB');
-            expect(screen.queryByTestId('timer-status-tempreature-widget')).toHaveTextContent('12.32 C');
-            expect(screen.queryByTestId('timer-status-voltage-widget')).toHaveTextContent('3.32 V');
-            expect(screen.queryByTestId('timer-status-time-widget')).toHaveTextContent(localTimeFormattedStr);
+            expect(screen.queryByTestId('dashboard-memory-widget')).toHaveTextContent('62.23 kB');
+            expect(screen.queryByTestId('dashboard-tempreature-widget')).toHaveTextContent('12.32 C');
+            expect(screen.queryByTestId('dashboard-voltage-widget')).toHaveTextContent('3.32 V');
+            expect(screen.queryByTestId('dashboard-time-widget')).toHaveTextContent(localTimeFormattedStr);
             expect(ApiService.getHealth).toHaveBeenCalledTimes(1);
             expect(ApiService.getIoConfig).toHaveBeenCalledTimes(1);
         });

@@ -13,7 +13,7 @@ const Layout = () => {
                     path="/"
                     render={() => {
                         return (
-                            <Redirect to="/timer-status" />
+                            <Redirect to="/dashboard" />
                         )
                     }}
                 />

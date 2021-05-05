@@ -74,7 +74,7 @@ const ScheduleWidget = (props) => {
                 </Alert>
                 : <Card data-testid={'schedule-widget-pin-' + props.schedule.pin}>
                     <Card.Body>
-                        <Card.Subtitle className="mb-2 text-muted">PIN {props.schedule.pin}</Card.Subtitle>
+                        <Card.Subtitle className="mb-2 text-muted">{props.schedule.title} (pin {props.schedule.pin})</Card.Subtitle>
                         <Row>
                             <Col xs={8}>
                                 <Card.Text data-testid="schedule-widget-start-and-end-time">
