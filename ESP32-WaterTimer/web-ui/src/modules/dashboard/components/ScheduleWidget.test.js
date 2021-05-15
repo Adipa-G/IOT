@@ -1,26 +1,18 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 
 import ApiService from '../../../services/ApiService';
+import TimeUtils from '../../../services/TimeUtils';
 
 import ScheduleWidget from './ScheduleWidget';
 
+const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
 const renderComponent = () => {
-    const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
     render(
         <ScheduleWidget schedule={schedule}></ScheduleWidget>
     );
 }
 
 describe('when loading', () => {
-    var pad = (val) => ('' + val).padStart(2, '0');
-    var date = new Date();
-    var startUtcStr = `${date.getFullYear()}-${pad(date.getMonth())}-${pad(date.getDate())}T10:10:00.000Z`;
-    var endUtcStr = `${date.getFullYear()}-${pad(date.getMonth())}-${pad(date.getDate())}T11:40:00.000Z`;
-    let localStartTime = new Date(startUtcStr);
-    let localEndTime = new Date(endUtcStr);
-    let startEndTimeStr = `${pad(localStartTime.getHours())}:${pad(localStartTime.getMinutes())}-${pad(localEndTime.getHours())}:${pad(localEndTime.getMinutes())}`;
-
-
     beforeEach(() => {
         const pinState = { value: "1" };
         jest.spyOn(ApiService, 'getPinValue').mockReturnValue(Promise.resolve(pinState));
@@ -45,10 +37,13 @@ describe('when loading', () => {
     });
 
     test('show the schedule in local time', async () => {
+        const timeTokens = schedule.highDurationUtc.split('-');
+        const localTime = `${TimeUtils.timeToLocal(timeTokens[0])}-${TimeUtils.timeToLocal(timeTokens[1])}`;
+
         await act(async () => { renderComponent(); });
 
         await waitFor(() => {
-            expect(screen.getByTestId('schedule-widget-start-and-end-time')).toHaveTextContent(startEndTimeStr);
+            expect(screen.getByTestId('schedule-widget-start-and-end-time')).toHaveTextContent(localTime);
         });
     });
 })

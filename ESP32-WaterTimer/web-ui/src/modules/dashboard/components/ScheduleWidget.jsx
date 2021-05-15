@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Spinner, Card, Alert, ButtonGroup, ToggleButton, Col, Row } from 'react-bootstrap';
 
 import ApiService from '../../../services/ApiService';
+import TimeUtils from '../../../services/TimeUtils';
 
 const ScheduleWidget = (props) => {
     const [pinValue, setPinValue] = useState("0");
@@ -47,17 +48,9 @@ const ScheduleWidget = (props) => {
     };
 
     let getHighDurationLocal = () => {
-        var pad = (val) => ('' + val).padStart(2, '0');
-        var convertToLocal = (periodUtc) => {
-            var date = new Date();
-            var periodTokens = periodUtc.split(':');
-            var utcStr = `${date.getFullYear()}-${pad(date.getMonth())}-${pad(date.getDate())}T${pad(periodTokens[0])}:${pad(periodTokens[1])}:00.000Z`;
-            var localDate = new Date(utcStr);
-            return `${pad(localDate.getHours())}:${pad(localDate.getMinutes())}`;
-        };
         var duration = props.schedule.highDurationUtc;
         var tokens = duration.split('-');
-        return `${convertToLocal(tokens[0])}-${convertToLocal(tokens[1])}`;
+        return `${TimeUtils.timeToLocal(tokens[0])}-${TimeUtils.timeToLocal(tokens[1])}`;
     };
 
     return (

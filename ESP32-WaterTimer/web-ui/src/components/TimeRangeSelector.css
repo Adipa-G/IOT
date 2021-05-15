@@ -1,0 +1,12 @@
+.time-range {
+    display: flex;
+}
+
+.time-range .form-control {
+}
+
+.time-range .spacer {
+    margin: 5px 2px 5px 2px;
+}
+
+

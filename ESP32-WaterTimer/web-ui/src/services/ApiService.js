@@ -20,15 +20,23 @@ const ApiService = {
         });
         return response.json();
     },
-    getPinValue: async (pin_number) => {
-        let response = await fetch(`${Config.apiBaseUrl}/pin/pin_value/${pin_number}`, {
+    setIoConfig: async (ioConfig) => {
+        let response = await fetch(`${Config.apiBaseUrl}/setup/io_config`, {
+            method: 'POST',
+            body: JSON.stringify(ioConfig),
+            headers: defaultHeaders
+        });
+        return response.json();
+    },
+    getPinValue: async (pinNumber) => {
+        let response = await fetch(`${Config.apiBaseUrl}/pin/pin_value/${pinNumber}`, {
             method: 'GET',
             headers: defaultHeaders
         });
         return response.json();
     },
-    setPinValue: async (pin_number, value) => {
-        let response = await fetch(`${Config.apiBaseUrl}/pin/pin_value/${pin_number}`, {
+    setPinValue: async (pinNumber, value) => {
+        let response = await fetch(`${Config.apiBaseUrl}/pin/pin_value/${pinNumber}`, {
             method: 'POST',
             body: JSON.stringify({ value: value }),
             headers: defaultHeaders
