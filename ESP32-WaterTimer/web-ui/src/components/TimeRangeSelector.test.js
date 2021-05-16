@@ -11,7 +11,7 @@ const renderComponent = (range) => {
     );
 }
 
-describe('when loading', () => {
+describe('when loaded', () => {
     test('set defailt value if no range set', async () => {
         await act(async () => { renderComponent(); });
 

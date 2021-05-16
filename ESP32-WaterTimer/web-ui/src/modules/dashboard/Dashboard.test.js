@@ -13,8 +13,7 @@ const renderComponent = () => {
 
 describe('when loading', () => {
     beforeEach(() => {
-        const health = { healthy: true, voltage: 0, memory: 0, tempreature: 0, time: [2000, 1, 1, 0, 0, 0, 0, 0] };
-        jest.spyOn(ApiService, 'getHealth').mockReturnValue(Promise.resolve(health));
+        jest.spyOn(ApiService, 'getHealth').mockReturnValue(new Promise(() => { })); //never resolving promise
     });
 
     test('shows the loader', async () => {

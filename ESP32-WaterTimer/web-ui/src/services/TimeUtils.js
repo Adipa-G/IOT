@@ -1,4 +1,4 @@
-const TimeUtil = {
+const TimeUtils = {
     timeToUtc: (localTime) => {
         var pad = (val) => ('' + val).padStart(2, '0');
         var date = new Date();
@@ -20,4 +20,4 @@ const TimeUtil = {
     }
 }
 
-export default TimeUtil;
+export default TimeUtils;

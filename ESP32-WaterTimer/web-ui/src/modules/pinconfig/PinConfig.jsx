@@ -101,7 +101,7 @@ const PinConfig = () => {
             { !loading ?
                 <div>
                     {ioConfig.schedules.map((schedule, index) => {
-                        return <Card key={index} className="pin-config-card">
+                        return <Card key={index} className="pin-config-card" data-testid="pin-config-container">
                             <Card.Body>
                                 <Form.Row>
                                     <Form.Group as={Col} xs={4} sm={4} lg={3}>
@@ -109,6 +109,7 @@ const PinConfig = () => {
                                         <Form.Control type="number"
                                             value={schedule.pin}
                                             placeholder="pin number"
+                                            data-testid="pin-number-input"
                                             onChange={(e) => onPinNumberChange(index, parseInt(e.target.value))} />
                                     </Form.Group>
                                     <Form.Group as={Col} xs={8} sm={8} lg={3}>
@@ -116,6 +117,7 @@ const PinConfig = () => {
                                         <Form.Control type="input"
                                             value={schedule.title}
                                             placeholder="pin title"
+                                            data-testid="pin-title-input"
                                             onChange={(e) => onPinTitleChange(index, e.target.value)} />
                                     </Form.Group>
                                     <Form.Group as={Col} xs={12} sm={11} lg={3}>
@@ -127,6 +129,7 @@ const PinConfig = () => {
                                     <Form.Group as={Col} xs={12} sm={1} lg={3}>
                                         <Button variant="outline-danger"
                                             className="remove-button float-right"
+                                            data-testid="remove-button"
                                             onClick={() => onRemove(index)}>X
                                         </Button>
                                     </Form.Group>
@@ -136,11 +139,13 @@ const PinConfig = () => {
                     })}
                     <Button variant="outline-primary"
                         className="add-button"
+                        data-testid="add-button"
                         onClick={() => onAdd()}>
                         Add Schedule
                     </Button>
                     <Button variant="primary"
                         className="save-button float-right"
+                        data-testid="save-button"
                         onClick={() => onSave()}>
                         Save
                     </Button>
