@@ -43,6 +43,21 @@ const ApiService = {
         });
         return response.json();
     },
+    getPowerConfig: async () => {
+        let response = await fetch(`${Config.apiBaseUrl}/setup/power_config`, {
+            method: 'GET',
+            headers: defaultHeaders
+        });
+        return response.json();
+    },
+    setPowerConfig: async (value) => {
+        let response = await fetch(`${Config.apiBaseUrl}/setup/power_config`, {
+            method: 'POST',
+            body: JSON.stringify(value),
+            headers: defaultHeaders
+        });
+        return response.json();
+    },
 }
 
 export default ApiService;

@@ -87,9 +87,44 @@ describe('when saving', () => {
         jest.spyOn(ApiService, 'setIoConfig').mockReturnValue(Promise.resolve({}));
     });
 
+    test('validation error when incorrect pin', async () => {
+        await act(async () => {
+            renderComponent();
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('pin-number-input'), { target: { value: 'x' } })
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
+
+        await waitFor(() => {
+            expect(ApiService.setIoConfig).toHaveBeenCalledTimes(0);
+            expect(screen.getByTestId('pin-config-validation-error')).toHaveTextContent('incorrect pin number');
+        });
+    });
+
+    test('validation error when incorrect title', async () => {
+        await act(async () => {
+            renderComponent();
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('pin-title-input'), { target: { value: '' } })
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
+
+        await waitFor(() => {
+            expect(ApiService.setIoConfig).toHaveBeenCalledTimes(0);
+            expect(screen.getByTestId('pin-config-validation-error')).toHaveTextContent('incorrect title');
+        });
+    });
+
     test('call the API to save io config', async () => {
         await act(async () => {
             renderComponent();
+        });
+
+        await act(async () => {
             fireEvent.click(screen.getByTestId('save-button'));
         });
 

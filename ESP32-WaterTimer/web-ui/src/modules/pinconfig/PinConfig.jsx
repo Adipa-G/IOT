@@ -11,6 +11,7 @@ const PinConfig = () => {
     const [error, setError] = useState(false);
     const [ioConfig, setIoConfig] = useState({ schedules: [] });
     const [loading, setLoading] = useState(false);
+    const [validationError, setValidationError] = useState('');
 
     const onPinNumberChange = (scheduleIndex, pinNumber) => {
         const schedule = ioConfig.schedules[scheduleIndex];
@@ -51,6 +52,24 @@ const PinConfig = () => {
     };
 
     const onSave = () => {
+        var err = [];
+        var timeRegex = new RegExp(/^(?:2[0-3]|[01][0-9]):[0-5][0-9]-(?:2[0-3]|[01][0-9]):[0-5][0-9]$/)
+        ioConfig.schedules.forEach(((schedule, index) => {
+            if (!schedule.pin || isNaN(schedule.pin)) {
+                err.push(`Schedule ${index}: incorrect pin number.`);
+            }
+            if (!timeRegex.test(schedule.highDurationUtc)) {
+                err.push(`Schedule ${index}: incorrect schedule.`);
+            }
+            if (!schedule.title) {
+                err.push(`Schedule ${index}: incorrect title.`);
+            }
+        }));
+        if (err.length > 0) {
+            setValidationError(err);
+            return;
+        }
+
         setLoading(true);
         ApiService.setIoConfig(ioConfig).then(() => {
             setLoading(false);
@@ -110,7 +129,7 @@ const PinConfig = () => {
                                             value={schedule.pin}
                                             placeholder="pin number"
                                             data-testid="pin-number-input"
-                                            onChange={(e) => onPinNumberChange(index, parseInt(e.target.value))} />
+                                            onChange={(e) => onPinNumberChange(index, e.target.value)} />
                                     </Form.Group>
                                     <Form.Group as={Col} xs={8} sm={8} lg={3}>
                                         <Form.Label>Title</Form.Label>
@@ -137,6 +156,12 @@ const PinConfig = () => {
                             </Card.Body>
                         </Card>
                     })}
+                    {validationError ?
+                        <Alert variant="danger" className="widget" data-testid="pin-config-validation-error">
+                            {validationError}
+                        </Alert>
+                        : null
+                    }
                     <Button variant="outline-primary"
                         className="add-button"
                         data-testid="add-button"

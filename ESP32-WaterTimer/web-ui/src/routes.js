@@ -1,5 +1,6 @@
 import Dashboard from './modules/dashboard/Dashboard';
 import PinConfig from './modules/pinconfig/PinConfig';
+import PowerConfig from './modules/powerconfig/PowerConfig';
 
 const Routes = [
     {
@@ -9,6 +10,10 @@ const Routes = [
     {
         path: "/pin-config",
         component: <PinConfig />
+    },
+    {
+        path: "/power-config",
+        component: <PowerConfig />
     }
 ];
 

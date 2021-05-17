@@ -28,6 +28,9 @@ const Menu = () => {
                         <Nav.Link eventKey="2" as={Link} to="/pin-config">
                             IO Schedule Configuration
                         </Nav.Link>
+                        <Nav.Link eventKey="2" as={Link} to="/power-config">
+                            Power Configuration
+                        </Nav.Link>
                         {
                             health.wlanConfigMode ?
                                 <Nav.Link eventKey="2" as={Link} to="/connect-to-wifi" data-testid="menu-connect-to-wifi">
