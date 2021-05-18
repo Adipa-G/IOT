@@ -65,8 +65,8 @@ const PinConfig = () => {
                 err.push(`Schedule ${index}: incorrect title.`);
             }
         }));
+        setValidationError(err);
         if (err.length > 0) {
-            setValidationError(err);
             return;
         }
 

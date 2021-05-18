@@ -1,14 +1,11 @@
 import './TimeRangeSelector.css'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TimeUtils from '../services/TimeUtils';
 
 const TimeRangeSelector = (props) => {
-    const start = props.range ? TimeUtils.timeToLocal(props.range.split('-')[0]) : TimeUtils.timeToLocal('00:00');
-    const end = props.range ? TimeUtils.timeToLocal(props.range.split('-')[1]) : TimeUtils.timeToLocal('00:01');
-
-    const [startTime, setStartTime] = useState(start);
-    const [endTime, setEndTime] = useState(end);
+    const [startTime, setStartTime] = useState(TimeUtils.timeToLocal('00:00'));
+    const [endTime, setEndTime] = useState(TimeUtils.timeToLocal('00:01'));
 
     const startTimeOnChange = function (value) {
         setStartTime(value);
@@ -21,6 +18,13 @@ const TimeRangeSelector = (props) => {
         var result = `${TimeUtils.timeToUtc(startTime)}-${TimeUtils.timeToUtc(value)}`;
         props.onTimeChange(result);
     }
+
+    useEffect(() => {
+        const start = props.range ? TimeUtils.timeToLocal(props.range.split('-')[0]) : TimeUtils.timeToLocal('00:00');
+        const end = props.range ? TimeUtils.timeToLocal(props.range.split('-')[1]) : TimeUtils.timeToLocal('00:01');
+        setStartTime(start);
+        setEndTime(end);
+    }, [props.range]);
 
     return (
         <div className="time-range">

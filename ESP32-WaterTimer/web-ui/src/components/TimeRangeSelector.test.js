@@ -37,6 +37,9 @@ describe('input changed', () => {
     test('when from time changed call and fire time change event with utc time', async () => {
         await act(async () => {
             renderComponent('10:00-10:10');
+        });
+
+        await act(async () => {
             fireEvent.change(screen.getByTestId('from-time'), { target: { value: '10:05' } });
         });
 
@@ -49,6 +52,9 @@ describe('input changed', () => {
     test('when to time changed call and fire time change event with utc time', async () => {
         await act(async () => {
             renderComponent('10:00-10:05');
+        });
+
+        await act(async () => {
             fireEvent.change(screen.getByTestId('to-time'), { target: { value: '10:10' } });
         });
 
