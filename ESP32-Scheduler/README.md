@@ -23,7 +23,7 @@ There are 2 folders,
  
 ### Setting up
  1. Install USB to UART driver. [This](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers) may be a good candidate and work for you.
- 2. Connect your ESP32 board to the USB port and note the port. In order to find the port open the Device Manager and expand the Ports node. If the USB to UART driver is correctly functioning you should see something like `Silicon Labs CP210X USB to UART Bridge (COM3)`. In this case the port will be `COM3`. We will be using the same value for subsequent steps. Please substitue your port for the following steps.
+ 2. Connect your ESP32 board to the USB port and note the port. In order to find the port open the Device Manager and expand the Ports node. If the USB to UART driver is correctly functioning you should see something like `Silicon Labs CP210X USB to UART Bridge (COM3)`. In this case the port will be `COM3`. We will be using the same value for subsequent steps. Please substitute your port for the following steps.
  3. Reset the board with the command esptool.py --port COM3 erase_flash
  4. Download the firmware from [Here](https://micropython.org/download/esp32/)
  5. Flash it using `esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 esp32-idf4-20191220-v1.12.bin`
