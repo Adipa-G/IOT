@@ -7,3 +7,4 @@
 /ESP32/webui/uniflash/*
 **/node_modules/**
 **/.vscode/**
+/ESP32-Scheduler/web-ui/build/**/*.*

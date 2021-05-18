@@ -110,25 +110,6 @@ describe('when saving', () => {
         });
     });
 
-    test('validation error when incorrect screen on time', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('high-power-min-voltage'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
-
-        await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('High power: incorrect min voltage');
-        });
-    });
-
     test('validation error when incorrect high power min voltage', async () => {
         await act(async () => {
             renderComponent();
@@ -209,7 +190,7 @@ describe('when saving', () => {
         });
     });
 
-    test('validation error when high power min voltage less than medium power min voltage', async () => {
+    test('validation error when med power min voltage less than low power min voltage', async () => {
         await act(async () => {
             renderComponent();
         });
