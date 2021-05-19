@@ -72,7 +72,14 @@ class Server:
                     content = f.read(BUF_SIZE)
 
                     await writer.awrite("HTTP/1.0 200 OK\n")
-                    await writer.awrite("Content-Type: text/html\n")
+                    if path.endswith(".gz"):
+                        await writer.awrite("Content-Encoding: gzip\n")
+                    if path.find(".css") != -1:
+                        await writer.awrite("Content-Type: text/css\n")
+                    if path.find(".js") != -1:
+                        await writer.awrite("Content-Type: text/javascript\n")
+                    if path.find(".html") != -1:
+                        await writer.awrite("Content-Type: text/html\n")
                     await writer.awrite("\n")
 
                     while True:

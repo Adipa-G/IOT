@@ -1,0 +1,30 @@
+{
+    "headers": [
+        {
+            "source": "*.css.gz",
+            "headers": [
+                {
+                    "key": "Content-Encoding",
+                    "value": "gzip"
+                },
+                {
+                    "key": "Content-Type",
+                    "value": "text/css"
+                }
+            ]
+        },
+        {
+            "source": "*.js.gz",
+            "headers": [
+                {
+                    "key": "Content-Encoding",
+                    "value": "gzip"
+                },
+                {
+                    "key": "Content-Type",
+                    "value": "text/javascript"
+                }
+            ]
+        }
+    ]
+}
