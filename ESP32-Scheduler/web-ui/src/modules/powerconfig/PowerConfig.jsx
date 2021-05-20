@@ -22,7 +22,9 @@ const PowerConfig = () => {
         "highBattery.cpuFreqMHz": ''
     });
     const [loading, setLoading] = useState(false);
-    const [validationError, setValidationError] = useState('');
+    const [validationError, setValidationError] = useState([]);
+
+    const isNonNumber = (value) => !value || isNaN(value);
 
     const onFieldChange = (fieldName, value) => {
         let newState = { ...powerConfig };
@@ -33,9 +35,7 @@ const PowerConfig = () => {
     const onSave = () => {
         var err = [];
         var timeRegex = new RegExp(/^(?:2[0-3]|[01][0-9]):[0-5][0-9]-(?:2[0-3]|[01][0-9]):[0-5][0-9]$/)
-        var isNonNumber = (value) => !value || isNaN(value);
 
-        debugger;
         if (isNonNumber(powerConfig['screenOnSeconds'])) {
             err.push(`General: incorrect screen on time.`);
         }
@@ -107,7 +107,7 @@ const PowerConfig = () => {
 
 
     return (
-        <Container>
+        <Container className="power-config">
             { loading ?
                 <Spinner animation="border" className="loader" data-testid="power-config-loading-state">
                     <span className="sr-only">Loading...</span>
@@ -115,7 +115,7 @@ const PowerConfig = () => {
                 : null
             }
             { error ?
-                <Alert variant="danger" className="widget" data-testid="power-config-error-state">
+                <Alert variant="danger" data-testid="power-config-error-state">
                     Connectivity error. Please reload.
                 </Alert>
                 : null
@@ -135,7 +135,7 @@ const PowerConfig = () => {
                                         step="1"
                                         min="0"
                                         data-testid="screen-on-seconds"
-                                        onChange={(e) => onFieldChange('screenOnSeconds', e.target.value)} />
+                                        onChange={(e) => onFieldChange('screenOnSeconds', isNonNumber(e.target.value) ? e.target.value : parseInt(e.target.value))} />
                                     <Form.Text muted>
                                         Screen is turned off after {powerConfig['screenOnSeconds']} seconds.
                                     </Form.Text>
@@ -157,7 +157,7 @@ const PowerConfig = () => {
                                         min="0"
                                         max="4.2"
                                         data-testid="high-power-min-voltage"
-                                        onChange={(e) => onFieldChange('highBattery.minVoltage', e.target.value)} />
+                                        onChange={(e) => onFieldChange('highBattery.minVoltage', isNonNumber(e.target.value) ? e.target.value : parseFloat(e.target.value))} />
                                     <Form.Text muted>
                                         Minimum battery voltage for this power mode
                                     </Form.Text>
@@ -189,7 +189,7 @@ const PowerConfig = () => {
                                         min="0"
                                         max="4.2"
                                         data-testid="med-power-min-voltage"
-                                        onChange={(e) => onFieldChange('mediumBattery.minVoltage', e.target.value)} />
+                                        onChange={(e) => onFieldChange('mediumBattery.minVoltage', isNonNumber(e.target.value) ? e.target.value : parseFloat(e.target.value))} />
                                     <Form.Text muted>
                                         Minimum battery voltage for this power mode
                                     </Form.Text>
@@ -230,7 +230,7 @@ const PowerConfig = () => {
                                         min="0"
                                         max="4.2"
                                         data-testid="low-power-min-voltage"
-                                        onChange={(e) => onFieldChange('lowBattery.minVoltage', e.target.value)} />
+                                        onChange={(e) => onFieldChange('lowBattery.minVoltage', isNonNumber(e.target.value) ? e.target.value : parseFloat(e.target.value))} />
                                     <Form.Text muted>
                                         Minimum battery voltage for this power mode
                                     </Form.Text>
@@ -270,8 +270,7 @@ const PowerConfig = () => {
                                         min="0"
                                         value={powerConfig['extraLowBattery.continousDeepSleepHours']}
                                         data-testid="ex-low-power-sleep-duration"
-                                        onChange={(e) => onFieldChange('extraLowBattery.continousDeepSleepHours', e.target.value)}
-                                    />
+                                        onChange={(e) => onFieldChange('extraLowBattery.continousDeepSleepHours', isNonNumber(e.target.value) ? e.target.value : parseFloat(e.target.value))} />
                                     <Form.Text muted>
                                         Number of hours to deep sleep. The device will continue to sleep until voltage recovers to the minimum threshold of the low power mode ({powerConfig['lowBattery.minVoltage']}V)
                                     </Form.Text>
@@ -279,9 +278,11 @@ const PowerConfig = () => {
                             </Form.Row>
                         </Card.Body>
                     </Card>
-                    {validationError ?
-                        <Alert variant="danger" className="widget" data-testid="power-config-validation-error">
-                            {validationError}
+                    {validationError.length > 0 ?
+                        <Alert variant="danger" className="alert-msg" data-testid="power-config-validation-error">
+                            {validationError.map((line, i) => (
+                                <div key={i}>{line}</div>
+                            ))}
                         </Alert>
                         : null
                     }

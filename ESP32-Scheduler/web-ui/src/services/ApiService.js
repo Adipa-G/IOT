@@ -58,6 +58,14 @@ const ApiService = {
         });
         return response.json();
     },
+    setWlanConfig: async (value) => {
+        let response = await fetch(`${Config.apiBaseUrl}/setup/wlan_creds`, {
+            method: 'POST',
+            body: JSON.stringify(value),
+            headers: defaultHeaders
+        });
+        return response.json();
+    },
 }
 
 export default ApiService;

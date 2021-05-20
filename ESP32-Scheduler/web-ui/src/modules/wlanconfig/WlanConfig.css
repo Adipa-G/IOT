@@ -1,4 +1,4 @@
-.power-config, .save-button {
+.wlan-config, .save-button {
     margin-top: 15px;
 }
 
@@ -8,7 +8,7 @@
     top: 40vh;
 }
 
-.card-space, .alert-msg {
+.alert-msg {
     margin-top: 10px;
+    margin-bottom: 0px;
 }
-

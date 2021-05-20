@@ -2,6 +2,12 @@
     margin-top: 15px;
 }
 
+.loader {
+    position: relative;
+    left: 50%;
+    top: 40vh;
+}
+
 .remove-button {
     margin-top: 32px;
 }

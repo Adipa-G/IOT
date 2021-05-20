@@ -11,11 +11,13 @@ const PinConfig = () => {
     const [error, setError] = useState(false);
     const [ioConfig, setIoConfig] = useState({ schedules: [] });
     const [loading, setLoading] = useState(false);
-    const [validationError, setValidationError] = useState('');
+    const [validationError, setValidationError] = useState([]);
+
+    const isNonNumber = (value) => !value || isNaN(value);
 
     const onPinNumberChange = (scheduleIndex, pinNumber) => {
         const schedule = ioConfig.schedules[scheduleIndex];
-        schedule.pin = pinNumber;
+        schedule.pin = isNonNumber(pinNumber) ? pinNumber : parseInt(pinNumber);
         let newState = { schedules: ioConfig.schedules };
         newState.schedules[scheduleIndex] = schedule;
         setIoConfig(newState);
@@ -156,9 +158,11 @@ const PinConfig = () => {
                             </Card.Body>
                         </Card>
                     })}
-                    {validationError ?
+                    {validationError.length > 0 ?
                         <Alert variant="danger" className="widget" data-testid="pin-config-validation-error">
-                            {validationError}
+                            {validationError.map((line, i) => (
+                                <div key={i}>{line}</div>
+                            ))}
                         </Alert>
                         : null
                     }

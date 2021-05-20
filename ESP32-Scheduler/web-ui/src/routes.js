@@ -1,6 +1,7 @@
 import Dashboard from './modules/dashboard/Dashboard';
 import PinConfig from './modules/pinconfig/PinConfig';
 import PowerConfig from './modules/powerconfig/PowerConfig';
+import WlanConfig from './modules/wlanconfig/WlanConfig';
 
 const Routes = [
     {
@@ -14,6 +15,10 @@ const Routes = [
     {
         path: "/power-config",
         component: <PowerConfig />
+    },
+    {
+        path: "/wlan-config",
+        component: <WlanConfig />
     }
 ];
 
