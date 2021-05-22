@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import ApiService from '../../services/ApiService';
 
@@ -73,6 +73,67 @@ describe('when saving', () => {
         await waitFor(() => {
             expect(ApiService.setWlanConfig).toHaveBeenCalledTimes(1);
             expect(screen.queryByTestId('wlan-config-loading-state')).toBeInTheDocument();
+        });
+    });
+})
+
+describe('when saving success', () => {
+    beforeEach(() => {
+        jest.spyOn(ApiService, 'setWlanConfig').mockReturnValue(new Promise(() => { })); //never resolving result
+    });
+
+    test('call the API to save io config', async () => {
+        await act(async () => {
+            renderComponent();
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('wlan-ssid'), { target: { value: 'X' } })
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('wlan-password'), { target: { value: 'y' } })
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
+
+        await waitFor(() => {
+            expect(ApiService.setWlanConfig).toHaveBeenCalledTimes(1);
+            expect(screen.queryByTestId('wlan-config-loading-state')).toBeInTheDocument();
+        });
+    });
+})
+
+describe('when saving returned error', () => {
+    beforeEach(() => {
+        jest.spyOn(ApiService, 'setWlanConfig').mockReturnValue(Promise.resolve({ result: 'Failed', error: 'xyz....' }));
+    });
+
+    test('call the API to save io config', async () => {
+        await act(async () => {
+            renderComponent();
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('wlan-ssid'), { target: { value: 'X' } })
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('wlan-password'), { target: { value: 'y' } })
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
+
+        await waitFor(() => {
+            expect(ApiService.setWlanConfig).toHaveBeenCalledTimes(1);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('wlan-config-validation-error')).toHaveTextContent('xyz');
         });
     });
 })

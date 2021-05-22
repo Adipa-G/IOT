@@ -32,7 +32,12 @@ const WlanConfig = () => {
         }
 
         setLoading(true);
-        ApiService.setWlanConfig(wlanConfig).then(() => {
+        ApiService.setWlanConfig(wlanConfig).then((result) => {
+            if (result.result === 'Failed') {
+                err.push(result.error);
+                setValidationError(err);
+                setLoading(false);
+            }
             setError(false);
         }).catch(() => {
             setLoading(false);
