@@ -23,6 +23,9 @@ const Menu = () => {
                         <Nav.Link eventKey="4" as={Link} to="/wlan-config" data-testid="menu-connect-to-wifi">
                             Connect to Wifi
                         </Nav.Link>
+                        <Nav.Link eventKey="5" as={Link} to="/admin" data-testid="menu-admin">
+                            Admin
+                        </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

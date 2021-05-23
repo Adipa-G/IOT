@@ -13,6 +13,7 @@ const renderComponent = () => {
 
 describe('when loading', () => {
     beforeEach(() => {
+        jest.spyOn(ApiService, 'getIoConfig').mockReturnValue(Promise.resolve({ schedules: [] }));
         jest.spyOn(ApiService, 'getHealth').mockReturnValue(new Promise(() => { })); //never resolving promise
     });
 
@@ -27,6 +28,7 @@ describe('when loading', () => {
 
 describe('when loading error', () => {
     beforeEach(() => {
+        jest.spyOn(ApiService, 'getIoConfig').mockReturnValue(Promise.resolve({ schedules: [] }));
         jest.spyOn(ApiService, 'getHealth').mockReturnValue(Promise.reject({}));
     });
 
@@ -52,7 +54,7 @@ describe('when loaded', () => {
         jest.useFakeTimers();
         jest.spyOn(ApiService, 'getHealth').mockReturnValue(Promise.resolve(health));
         jest.spyOn(ApiService, 'getIoConfig').mockReturnValue(Promise.resolve(ioConfig));
-
+        jest.spyOn(ApiService, 'getPinValue').mockReturnValue(Promise.resolve({ value: 1 }));
     });
 
     afterEach(() => {

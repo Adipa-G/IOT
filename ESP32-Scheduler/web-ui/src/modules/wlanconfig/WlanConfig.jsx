@@ -8,7 +8,7 @@ import ApiService from '../../services/ApiService';
 const WlanConfig = () => {
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [wlanConfig, setWlanConfig] = useState({ ssid: '', password: '' });
+    const [wlanConfig, setWlanConfig] = useState({ ssid: '', password: '', url: '' });
     const [validationError, setValidationError] = useState('');
 
     const onFieldChange = (fieldName, value) => {
@@ -33,11 +33,14 @@ const WlanConfig = () => {
 
         setLoading(true);
         ApiService.setWlanConfig(wlanConfig).then((result) => {
-            if (result.result === 'Failed') {
+            if (result.result === 'Success') {
+                setWlanConfig({ ssid: wlanConfig.ssid, password: wlanConfig.password, url: result.url });
+            }
+            else {
                 err.push(result.error);
                 setValidationError(err);
-                setLoading(false);
             }
+            setLoading(false);
             setError(false);
         }).catch(() => {
             setLoading(false);
@@ -52,15 +55,18 @@ const WlanConfig = () => {
                     <Spinner animation="border" className="loader" data-testid="wlan-config-loading-state">
                         <span className="sr-only">Loading...</span>
                     </Spinner >
-                    <Alert variant="warning" className="alert-msg">
-                        Once this configuration is changed and saved, this device may not be assesible via the same URL. Please long press the left hand button of the device to find the new url.
-                    </Alert>
                 </div>
                 : null
             }
             { error ?
                 <Alert variant="danger" data-testid="wlan-config-error-state">
                     Connectivity error. Please reload.
+                </Alert>
+                : null
+            }
+            { wlanConfig.url ?
+                <Alert variant="success" data-testid="wlan-config-saved-state">
+                    The device is now accessible by connecting to {wlanConfig.ssid} network and browsing {wlanConfig.url}.
                 </Alert>
                 : null
             }

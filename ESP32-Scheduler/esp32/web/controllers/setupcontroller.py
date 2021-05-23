@@ -35,7 +35,14 @@ class SetupController:
         ssid = request.payload["ssid"]
         password = request.payload["password"]
         self.wlan_config.write_config(ssid, password)
-        return {"result": "Success"}
+
+        connectivity = self.wlan_setup.test_wlan_config()
+        if connectivity.connected == True:
+            return {
+                "result": "Success",
+                "url": "http://" + connectivity.ipAddress + "/",
+            }
+        return {"result": "Failed"}
 
     def post_restart(self, request):
         machine.reset()

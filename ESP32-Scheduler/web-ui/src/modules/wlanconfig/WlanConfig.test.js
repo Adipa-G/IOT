@@ -52,34 +52,11 @@ describe('when saving', () => {
             expect(screen.getByTestId('wlan-config-validation-error')).toHaveTextContent('Password is required');
         });
     });
-
-    test('call the API to save io config', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('wlan-ssid'), { target: { value: 'X' } })
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('wlan-password'), { target: { value: 'y' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
-
-        await waitFor(() => {
-            expect(ApiService.setWlanConfig).toHaveBeenCalledTimes(1);
-            expect(screen.queryByTestId('wlan-config-loading-state')).toBeInTheDocument();
-        });
-    });
 })
 
 describe('when saving success', () => {
     beforeEach(() => {
-        jest.spyOn(ApiService, 'setWlanConfig').mockReturnValue(new Promise(() => { })); //never resolving result
+        jest.spyOn(ApiService, 'setWlanConfig').mockReturnValue(Promise.resolve({ result: 'Success', url: 'http://127.10.10.1/' }));
     });
 
     test('call the API to save io config', async () => {
@@ -88,7 +65,7 @@ describe('when saving success', () => {
         });
 
         await act(async () => {
-            fireEvent.change(screen.getByTestId('wlan-ssid'), { target: { value: 'X' } })
+            fireEvent.change(screen.getByTestId('wlan-ssid'), { target: { value: 'My_Network' } })
         });
 
         await act(async () => {
@@ -101,7 +78,9 @@ describe('when saving success', () => {
 
         await waitFor(() => {
             expect(ApiService.setWlanConfig).toHaveBeenCalledTimes(1);
-            expect(screen.queryByTestId('wlan-config-loading-state')).toBeInTheDocument();
+            expect(screen.queryByTestId('wlan-config-saved-state')).toBeInTheDocument();
+            expect(screen.queryByTestId('wlan-config-saved-state')).toHaveTextContent('My_Network');
+            expect(screen.queryByTestId('wlan-config-saved-state')).toHaveTextContent('http://127.10.10.1/');
         });
     });
 })

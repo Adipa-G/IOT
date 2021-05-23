@@ -66,6 +66,14 @@ const ApiService = {
         });
         return response.json();
     },
+    reboot: async () => {
+        let response = await fetch(`${Config.apiBaseUrl}/setup/restart`, {
+            method: 'POST',
+            body: JSON.stringify({}),
+            headers: defaultHeaders
+        });
+        return response.json();
+    },
 }
 
 export default ApiService;

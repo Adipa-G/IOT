@@ -20,6 +20,7 @@ describe('when menu rendered', () => {
         await act(async () => { renderComponent(); });
 
         await waitFor(() => {
+            expect(screen.queryByTestId('menu-admin')).toBeInTheDocument();
             expect(screen.queryByTestId('menu-dashboard')).toBeInTheDocument();
             expect(screen.queryByTestId('menu-pin-config')).toBeInTheDocument();
             expect(screen.queryByTestId('menu-power-config')).toBeInTheDocument();
