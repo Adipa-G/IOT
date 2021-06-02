@@ -46,6 +46,16 @@ class WLANSetup:
             self.__print_wifi_setup_details(result)
             self.configMode = True
 
+    def get_config_mode_details(self):
+        result = type("", (), {})()
+        ap = network.WLAN(network.AP_IF)
+
+        if self.configMode == True and ap.active() == True:
+            result.ipAddress = ap.ifconfig()[0]
+        else:
+            result.ipAddress = None
+        return result
+
     def end_config_mode(self):
         ap = network.WLAN(network.AP_IF)
         ap.active(False)

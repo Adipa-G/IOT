@@ -111,9 +111,11 @@ class PowerManager:
         sta_if = network.WLAN(network.STA_IF)
         ap_if = network.WLAN(network.AP_IF)
         screen = locator.screen
-        server = locator.server
+        web_server = locator.web_server
+        dns_server = locator.dns_server
 
-        server.stop()
+        web_server.stop()
+        dns_server.stop()
         screen.turn_off_screen()
 
         sta_if.active(False)

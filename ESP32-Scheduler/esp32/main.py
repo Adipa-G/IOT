@@ -19,20 +19,22 @@ screen = locator.screen
 power_manager = locator.power_manager
 io_service = locator.io_service
 wlan_setup = locator.wlan_setup
-server = locator.server
+web_server = locator.web_server
+dns_server = locator.dns_server
 
 
 def connect_to_wlan_and_start_server():
     connected = wlan_setup.connect_to_configured_wlan()
     if connected == True:
-        server.start()
+        web_server.start()
 
 
 def right_button_event():
     power_manager.reset_screen_sleep()
     screen.turn_on_screen()
     wlan_setup.start_config_mode(True)
-    server.start()
+    web_server.start()
+    dns_server.start()
     screen.draw_text(
         "r-pressed" + str(time.ticks_ms()), FONT_LEFT, 200, displayDriver.GREEN
     )
@@ -43,6 +45,7 @@ def left_button_event():
     screen.turn_on_screen()
     wlan_setup.end_config_mode()
     connect_to_wlan_and_start_server()
+    dns_server.stop()
     screen.draw_text(
         "l-pressed" + str(time.ticks_ms()), FONT_LEFT, 210, displayDriver.GREEN
     )
@@ -59,6 +62,7 @@ async def main_loop():
         await power_manager.manage_power()
         await wlan_setup.reconnect_if_dropped()
         await io_service.run_schedule()
+        await dns_server.check_conn()
 
 
 connect_to_wlan_and_start_server()

@@ -3,13 +3,14 @@ import config.ioconfigservice as ioconfigservice
 import config.powerconfigservice as powerconfigservice
 import config.wlanconfigservice as wlanconfigservice
 import display.screen as screen
+import dns.server as dns_server
 import io.ioservice as ioservice
 import ioc.locator as locator
 import log.logservice as logservice
 import power.batteryvoltage as batteryvoltage
 import power.powermanager as powermanager
 import web.apiservice as apiservice
-import web.server as server
+import web.server as web_server
 import wlan.wlansetup as wlansetup
 
 
@@ -25,5 +26,6 @@ class LocatorInit:
         locator.io_service = ioservice.IoService()
         locator.power_manager = powermanager.PowerManager()
         locator.wlan_setup = wlansetup.WLANSetup()
+        locator.dns_server = dns_server.Server()
         locator.api_service = apiservice.APIService()
-        locator.server = server.Server("pub")
+        locator.web_server = web_server.Server("pub")

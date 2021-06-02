@@ -1,9 +1,4 @@
-import _thread
-import random
-import socket
-import time
 import ujson
-import os
 import uasyncio
 from micropython import const
 
