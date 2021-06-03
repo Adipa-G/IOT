@@ -1,19 +1,18 @@
 import machine
 import uasyncio
 
+
 class Button:
     def __init__(self, pin, defaultValue, event):
-        self.pin = pin
-        self.defaultValue = defaultValue
-        self.buttonVal = defaultValue
-        self.event = event
-        self.pinRef = machine.Pin(pin, machine.Pin.IN)  
+        self._pin = pin
+        self._defaultValue = defaultValue
+        self._buttonVal = defaultValue
+        self._event = event
+        self._pinRef = machine.Pin(pin, machine.Pin.IN)
 
     async def handle_event(self):
-        buttonVal = self.pinRef.value()
-        if (buttonVal != self.defaultValue and self.buttonVal != buttonVal):
-            self.event()
-        self.buttonVal = buttonVal
+        buttonVal = self._pinRef.value()
+        if buttonVal != self._defaultValue and self._buttonVal != buttonVal:
+            self._event()
+        self._buttonVal = buttonVal
         await uasyncio.sleep_ms(500)
-
-    
