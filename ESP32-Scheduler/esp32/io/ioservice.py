@@ -12,9 +12,9 @@ PIN_LOW = const(0)
 
 class IoService:
     def __init__(self):
-        self.io_config_service = locator.io_config_service
-        self.io_cycle = 0
-        self.log_service = locator.log_service
+        self._io_config_service = locator.io_config_service
+        self._io_cycle = 0
+        self._log_service = locator.log_service
 
     def get_pin_state(self, pin_no):
         pin = machine.Pin(pin_no, machine.Pin.IN)
@@ -28,21 +28,21 @@ class IoService:
             pin.value(PIN_LOW)
 
     async def run_schedule(self):
-        if self.io_cycle == IO_CYCLES:
-            self.log_service.log("running io cycle")
-            self.io_cycle = 0
-            config = self.io_config_service.read_config()
+        if self._io_cycle == IO_CYCLES:
+            self._log_service.log("running io cycle")
+            self._io_cycle = 0
+            config = self._io_config_service.read_config()
             for schedule in config["schedules"]:
                 pinStr = "Unknown"
                 try:
                     pinStr = str(schedule["pin"])
                     self.__run_schedule(schedule["pin"], schedule["highDurationUtc"])
                 except Exception as e:
-                    self.log_service.log(
+                    self._log_service.log(
                         "error running schedule for pin " + pinStr + " " + str(e)
                     )
 
-        self.io_cycle = self.io_cycle + 1
+        self._io_cycle = self._io_cycle + 1
         await uasyncio.sleep_ms(1000)
 
     def __run_schedule(self, pin, duration):
