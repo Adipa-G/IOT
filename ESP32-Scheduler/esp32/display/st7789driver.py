@@ -76,12 +76,22 @@ def color565(r, g=0, b=0):
         r, g, b = r  # see if the first var is a tuple/list
     except TypeError:
         pass
-    return (r & 0xf8) << 8 | (g & 0xfc) << 3 | b >> 3
+    return (r & 0xF8) << 8 | (g & 0xFC) << 3 | b >> 3
 
 
 class ST77xx:
-    def __init__(self, spi, width, height, reset, dc, cs=None, backlight=None,
-                 xstart=-1, ystart=-1):
+    def __init__(
+        self,
+        spi,
+        width,
+        height,
+        reset,
+        dc,
+        cs=None,
+        backlight=None,
+        xstart=-1,
+        ystart=-1,
+    ):
         """
         display = st7789.ST7789(
             SPI(1, baudrate=40000000, phase=0, polarity=1),
@@ -91,25 +101,26 @@ class ST77xx:
         )
 
         """
-        self.width = width
-        self.height = height
-        self.spi = spi
+        self._width = width
+        self._height = height
+        self._spi = spi
         if spi is None:
             import machine
-            self.spi = machine.SPI(1, baudrate=40000000, phase=0, polarity=1)
-        self.reset = reset
-        self.dc = dc
-        self.cs = cs
-        self.backlight = backlight
+
+            self._spi = machine.SPI(1, baudrate=40000000, phase=0, polarity=1)
+        self._reset = reset
+        self._dc = dc
+        self._cs = cs
+        self._backlight = backlight
         if xstart >= 0 and ystart >= 0:
-            self.xstart = xstart
-            self.ystart = ystart
-        elif (self.width, self.height) == (240, 240):
-            self.xstart = 0
-            self.ystart = 0
-        elif (self.width, self.height) == (135, 240):
-            self.xstart = 52
-            self.ystart = 40
+            self._xstart = xstart
+            self._ystart = ystart
+        elif (self._width, self._height) == (240, 240):
+            self._xstart = 0
+            self._ystart = 0
+        elif (self._width, self._height) == (135, 240):
+            self._xstart = 52
+            self._ystart = 40
         else:
             raise ValueError(
                 "Unsupported display. Only 240x240 and 135x240 are supported "
@@ -117,36 +128,36 @@ class ST77xx:
             )
 
     def dc_low(self):
-        self.dc.off()
+        self._dc.off()
 
     def dc_high(self):
-        self.dc.on()
+        self._dc.on()
 
     def reset_low(self):
-        if self.reset:
-            self.reset.off()
+        if self._reset:
+            self._reset.off()
 
     def reset_high(self):
-        if self.reset:
-            self.reset.on()
+        if self._reset:
+            self._reset.on()
 
     def cs_low(self):
-        if self.cs:
-            self.cs.off()
+        if self._cs:
+            self._cs.off()
 
     def cs_high(self):
-        if self.cs:
-            self.cs.on()
+        if self._cs:
+            self._cs.on()
 
     def write(self, command=None, data=None):
         """SPI write to the device: commands and data"""
         self.cs_low()
         if command is not None:
             self.dc_low()
-            self.spi.write(bytes([command]))
+            self._spi.write(bytes([command]))
         if data is not None:
             self.dc_high()
-            self.spi.write(data)
+            self._spi.write(data)
         self.cs_high()
 
     def hard_reset(self):
@@ -214,17 +225,17 @@ class ST77xx:
         return struct.pack(_ENCODE_PIXEL, color)
 
     def _set_columns(self, start, end):
-        if start > end or end >= self.width:
+        if start > end or end >= self._width:
             return
-        start += self.xstart
-        end += self.xstart
+        start += self._xstart
+        end += self._xstart
         self.write(ST77XX_CASET, self._encode_pos(start, end))
 
     def _set_rows(self, start, end):
-        if start > end or end >= self.height:
+        if start > end or end >= self._height:
             return
-        start += self.ystart
-        end += self.ystart
+        start += self._ystart
+        end += self._ystart
         self.write(ST77XX_RASET, self._encode_pos(start, end))
 
     def set_window(self, x0, y0, x1, y1):
@@ -265,7 +276,7 @@ class ST77xx:
             self.write(None, pixel * rest)
 
     def fill(self, color):
-        self.fill_rect(0, 0, self.width, self.height, color)
+        self.fill_rect(0, 0, self._width, self._height, color)
 
     def line(self, x0, y0, x1, y1, color):
         # Line drawing function.  Will draw a single pixel wide line starting at
@@ -295,7 +306,7 @@ class ST77xx:
                 err += dx
             x0 += 1
 
-    def draw_letter(self, letter, screenX, screenY, colour, background = BLACK):
+    def draw_letter(self, letter, screenX, screenY, colour, background=BLACK):
         letterDef = fontdef.Font.LETTERS[letter]
         upper = self._encode_pixel(colour)
         lower = self._encode_pixel(background)
@@ -309,9 +320,9 @@ class ST77xx:
                 buf[bufLocation] = upper[0] if show else lower[0]
                 buf[bufLocation + 1] = upper[1] if show else lower[1]
             yBit *= 2
-        self.blit_buffer(buf,screenX,screenY,5,8)
+        self.blit_buffer(buf, screenX, screenY, 5, 8)
 
-    def draw_text(self, text, x, y, colour, background = BLACK):
+    def draw_text(self, text, x, y, colour, background=BLACK):
         letterIndex = 0
         for c in list(text):
             self.draw_letter(c, x + letterIndex * 6, y, colour, background)
