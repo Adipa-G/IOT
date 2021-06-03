@@ -15,14 +15,14 @@ WIFI_RECONNECT_CYCLES = const(300)
 
 class WLANSetup:
     def __init__(self):
-        self._configMode = False
+        self.configMode = False
         self._wifi_cycle = 0
         self._wlan_config = locator.wlan_config
         self._screen = locator.screen
         self._log_service = locator.log_service
 
     def start_config_mode(self, force):
-        if self._configMode == True:
+        if self.configMode == True:
             return
 
         configValue = self._wlan_config.read_config()
@@ -44,13 +44,13 @@ class WLANSetup:
             result.password = wifiPass
             result.ipAddress = ap.ifconfig()[0]
             self.__print_wifi_setup_details(result)
-            self._configMode = True
+            self.configMode = True
 
     def get_config_mode_details(self):
         result = type("", (), {})()
         ap = network.WLAN(network.AP_IF)
 
-        if self._configMode == True and ap.active() == True:
+        if self.configMode == True and ap.active() == True:
             result.ipAddress = ap.ifconfig()[0]
         else:
             result.ipAddress = None
@@ -59,7 +59,7 @@ class WLANSetup:
     def end_config_mode(self):
         ap = network.WLAN(network.AP_IF)
         ap.active(False)
-        self._configMode = False
+        self.configMode = False
 
     def connect_to_configured_wlan(self):
         sta_if = network.WLAN(network.STA_IF)
@@ -127,7 +127,7 @@ class WLANSetup:
         return result
 
     async def reconnect_if_dropped(self):
-        if self._configMode == True:
+        if self.configMode == True:
             return
 
         if self._wifi_cycle == WIFI_RECONNECT_CYCLES:
