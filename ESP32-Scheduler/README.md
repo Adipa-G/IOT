@@ -20,9 +20,9 @@ There are 2 folders,
 ### The Device
 The code is tested on [this](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id=1126&FId=t3:50033:3) device. The same code probably will work on other devices, however without the display it won't be as easy to use.
 
-![The device](/images/device.png?raw=true "The device") 
+![The device](/ESP32-Scheduler/images/device.png?raw=true "The device") 
 
-![Pin layout](/images/device_pins.png?raw=true "Pin layout") 
+![Pin layout](/ESP32-Scheduler/images/device_pins.png?raw=true "Pin layout") 
 
 ### Prerequisites
  1. Install [Python](https://www.python.org/downloads/) and ensure the python and pip package manager is in the path variables.
