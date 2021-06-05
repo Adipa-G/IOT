@@ -2,7 +2,7 @@
 # ESP32 Scheduler
 This is a generic timer/scheduler project using micropython and web interface. The device hosts a REST API developed using micropython and a SPA developed using react.
 
-The device can be switched to the wifi access point when the right button is long pressed. In this mode the device has a captive portal implementation that can be used to easily access it's web interface to connect it to a local network.
+The device can be switched to the Wi-Fi access point when the right button is long pressed. In this mode the device has a captive portal implementation that can be used to easily access it's web interface to connect it to a local network.
 
 There are 2 folders, 
 1. web-ui - contains the web interface
@@ -40,8 +40,33 @@ The code is tested on [this](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id
  7. When you want to copy a file to the board use command `ampy -p COM3 put <localFileOrFolder> {NameOnBoard}`
  8. Copy all files in `esp32` folder (including `\pub` folder with react output) to the device.
   
- ### UI
+### UI
 
+How to setup.
+
+1. When the right hand button is long pressed, the device shows the following screen.
+
+    ![AP Mode](/ESP32-Scheduler/images/ap_mode.jpg?raw=true "AP Mode") 
+
+2. Using the credentials in the screen, connect to the wireless network.
+3. Go to URL "http://esp32scheduler.org"
+4. This will bring up the web portal.
+5. In order to connect to a Wi-Fi endpoint select `Connect to Wi-Fi` option from the menu. This will show following screen. Set your Wi-Fi endpoint credentials and save. URL on new network is displayed in the screen. Make sure to connect your device to the Wi-Fi network before browsing to this URL.
+    
+    ![Wi-Fi config](/ESP32-Scheduler/images/wi-fi-config.png?raw=true "Wi-Fi config") 
+
+6. In order to setup a schedule please use the `IO Schedule Configuration` from the menu. This allows the user to setup a new schedule for a given GPIO pin. 
+
+    ![IO config](/ESP32-Scheduler/images/io-config.png?raw=true "IO Config") 
+
+7. Once the schedule is added, it's displayed in the dashboard. The dashboard also include some more diagnostic information such as voltage of the battery. Further dashboard allows user to manually toggle the GPIO state from the UI. 
+
+    ![Dashboard](/ESP32-Scheduler/images/dashboard.png?raw=true "Dashboard")  
+
+8. In order to tweak power and sleep settings of the device please use the `Power Configuration` option from the menu. This screen allows user to tweak battery voltages for the power save modes if the device runs on limited power source like a solar panel combined battery. 
+
+    ![Power config](/ESP32-Scheduler/images/power-config.png?raw=true "Power Config")  
+ 
 
 
 

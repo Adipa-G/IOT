@@ -39,17 +39,13 @@ function searchReplaceFile(regexpFind, replace, fileName) {
 const files = [];
 getFiles('build/static', files);
 files.forEach(file => {
+    const target = `build/${path.basename(file)}.gz`;
     const readStream = fs.createReadStream(`${file}`);
-    const writeStream = fs.createWriteStream(`${file}.gz`);
+    const writeStream = fs.createWriteStream(target);
     const zip = zlib.createGzip();
     readStream.pipe(zip).pipe(writeStream).on('finish', (err) => {
         if (err) console.log('ERROR: ' + err);
     })
-
-    const target = `build/${path.basename(file)}.gz`;
-    fs.rename(`${file}.gz`, target, (err) => {
-        if (err) console.log('ERROR: ' + err);
-    });
 });
 
 fs.copyFile('serve.json', 'build/serve.json', (err) => {
