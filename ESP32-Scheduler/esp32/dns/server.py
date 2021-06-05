@@ -42,15 +42,12 @@ class Server:
         for i in range(10):
             try:
                 packet, addr = self._sock.recvfrom(self.MAX_QUERY_LENGTH)
-                print("len : " + str(len(packet)))
 
                 if len(packet) < self.DNS_QUERY_START:
                     await uasyncio.sleep_ms(100)
                     return
 
-                print("raw : " + packet.decode("utf8"))
                 dnsQ = dnsquery.DNSQuery(packet)
-                print("domain : " + dnsQ._domain)
 
                 resp = dnsQ.response(self.__get_ip())
                 self._sock.sendto(resp, addr)
@@ -59,7 +56,7 @@ class Server:
             except OSError as err:
                 pass
             except Exception as catch_all:
-                self._log_service.log("failed to handle request " + str(catch_all))
+                self._log_service.log("failed to handle DNS request " + str(catch_all))
 
     def __get_ip(self):
         if self._ipAddress == None:

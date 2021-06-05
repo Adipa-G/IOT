@@ -1,6 +1,8 @@
 
-# ESP32 Scheduler (In Progress)
-This is a generic timer/scheduler project using micropython and web interface.
+# ESP32 Scheduler
+This is a generic timer/scheduler project using micropython and web interface. The device hosts a REST API developed using micropython and a SPA developed using react.
+
+The device can be switched to the wifi access point when the right button is long pressed. In this mode the device has a captive portal implementation that can be used to easily access it's web interface to connect it to a local network.
 
 There are 2 folders, 
 1. web-ui - contains the web interface
@@ -15,12 +17,19 @@ There are 2 folders,
  5. Copy files from the `web-ui\build` folder to `esp32\pub` folder
 
 ## ESP 32 Project
+### The Device
+The code is tested on [this](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id=1126&FId=t3:50033:3) device. The same code probably will work on other devices, however without the display it won't be as easy to use.
+
+![The device](/images/device.png?raw=true "The device") 
+
+![Pin layout](/images/device_pins.png?raw=true "Pin layout") 
+
 ### Prerequisites
  1. Install [Python](https://www.python.org/downloads/) and ensure the python and pip package manager is in the path variables.
  2. Install the esptool with command `pip install esptool`
  3. Install [Putty] (https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
  4. Install adafruit-ampy with command `pip install adafruit-ampy`
- 
+
 ### Setting up
  1. Install USB to UART driver. [This](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers) may be a good candidate and work for you.
  2. Connect your ESP32 board to the USB port and note the port. In order to find the port open the Device Manager and expand the Ports node. If the USB to UART driver is correctly functioning you should see something like `Silicon Labs CP210X USB to UART Bridge (COM3)`. In this case the port will be `COM3`. We will be using the same value for subsequent steps. Please substitute your port for the following steps.
@@ -29,5 +38,12 @@ There are 2 folders,
  5. Flash it using `esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 esp32-idf4-20191220-v1.12.bin`
  6. Use Putty to connect to the board (Use connection type as serial, and set speed as 115200 and serial line to be COM3)
  7. When you want to copy a file to the board use command `ampy -p COM3 put <localFileOrFolder> {NameOnBoard}`
+ 8. Copy all files in `esp32` folder (including `\pub` folder with react output) to the device.
+  
+ ### UI
+
+
+
+
  
  
