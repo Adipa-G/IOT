@@ -60,7 +60,9 @@ async def main_loop():
         await right_button.handle_event()
         await left_button.handle_event()
         await power_manager.manage_power()
-        await wlan_setup.reconnect_if_dropped()
+        connected = await wlan_setup.reconnect_if_dropped()
+        if connected == True:
+            web_server.start()
         await io_service.run_schedule()
         await dns_server.check_conn()
 

@@ -8,3 +8,4 @@
 **/node_modules/**
 **/.vscode/**
 /ESP32-Scheduler/web-ui/build/**/*.*
+/ESP32-Scheduler/esp32/pub/*.*

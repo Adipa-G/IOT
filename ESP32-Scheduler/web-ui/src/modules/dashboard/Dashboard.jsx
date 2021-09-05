@@ -18,7 +18,7 @@ const Dashboard = () => {
         var pad = (val) => ('' + val).padStart(2, '0');
         var utc = `${health.time[0]}-${pad(health.time[1])}-${pad(health.time[2])}T${pad(health.time[3])}:${pad(health.time[4])}:00.000Z`;
         var date = new Date(utc);
-        return `${date.getFullYear()}-${pad(date.getMonth())}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
     };
 
     useEffect(() => {
@@ -71,19 +71,19 @@ const Dashboard = () => {
 
     return (
         <Container>
-            { loading ?
+            {loading ?
                 <Spinner animation="border" className="loader" data-testid="dashboard-loading-state">
                     <span className="sr-only">Loading...</span>
                 </Spinner >
                 : null
             }
-            { error ?
+            {error ?
                 <Alert variant="danger" className="widget" data-testid="dashboard-error-state">
                     Connectivity error. Please reload.
                 </Alert>
                 : null
             }
-            { !loading ?
+            {!loading ?
                 <div>
                     <Row>
                         <Col xs={6} md={4} lg={3} key={1} className="widget">

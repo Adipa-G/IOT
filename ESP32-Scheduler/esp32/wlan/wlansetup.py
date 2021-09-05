@@ -10,7 +10,7 @@ import display.st7789driver as displayDriver
 import ioc.locator as locator
 
 FONT_LEFT = const(5)
-WIFI_RECONNECT_CYCLES = const(300)
+WIFI_RECONNECT_CYCLES = const(10)
 
 
 class WLANSetup:
@@ -87,10 +87,13 @@ class WLANSetup:
 
                 try:
                     settime()
+                    self._log_service.log(
+                        "connected to the network and configured time."
+                    )
                 except:
                     machine.reset()
-
                 self.__print_wifi_connection_details(result)
+
                 return connected
             else:
                 sta_if.active(False)
@@ -130,15 +133,17 @@ class WLANSetup:
         if self.configMode == True:
             return
 
+        connected = False
         if self._wifi_cycle == WIFI_RECONNECT_CYCLES:
             sta_if = network.WLAN(network.STA_IF)
-            self._log_service.log("trying wifi re-connect")
             if sta_if.isconnected() == False:
-                self.connect_to_configured_wlan()
+                self._log_service.log("trying wifi re-connect")
+                connected = self.connect_to_configured_wlan()
             self._wifi_cycle = 0
 
         self._wifi_cycle = self._wifi_cycle + 1
         await uasyncio.sleep_ms(1000)
+        return connected
 
     def __print_wifi_setup_details(self, config):
         self._screen.reset_screen()
