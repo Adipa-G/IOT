@@ -35,11 +35,13 @@ class LogService:
             if f != None:
                 f.close()
 
-        if log_size > 102400:
+        if log_size > 10240:
             f = None
             try:
                 f = open(LOG_BAK_FILE, "r")
+                f.close()
                 os.remove(LOG_BAK_FILE)
+                f = None
             except OSError as e:
                 print("bak file not present " + str(e))
             finally:

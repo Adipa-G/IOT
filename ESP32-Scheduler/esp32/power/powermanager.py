@@ -26,7 +26,6 @@ class PowerManager:
 
         self.__manage_screen()
         if self._power_cycle == POWER_MANAGEMENT_CYCLES:
-            self._log_service.log("running power management")
             try:
                 self.__adjust_cpu_frequency(voltage, freq)
                 self.__sleep_when_low_power(voltage)

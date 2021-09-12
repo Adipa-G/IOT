@@ -29,7 +29,6 @@ class IoService:
 
     async def run_schedule(self):
         if self._io_cycle == IO_CYCLES:
-            self._log_service.log("running io cycle")
             self._io_cycle = 0
             config = self._io_config_service.read_config()
             for schedule in config["schedules"]:
