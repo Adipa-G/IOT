@@ -35,7 +35,7 @@ The code is tested on [this](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id
  2. Connect your ESP32 board to the USB port and note the port. In order to find the port open the Device Manager and expand the Ports node. If the USB to UART driver is correctly functioning you should see something like `Silicon Labs CP210X USB to UART Bridge (COM3)`. In this case the port will be `COM3`. We will be using the same value for subsequent steps. Please substitute your port for the following steps.
  3. Reset the board with the command esptool.py --port COM3 erase_flash
  4. Download the firmware from [Here](https://micropython.org/download/esp32/)
- 5. Flash it using `esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 esp32-idf4-20191220-v1.12.bin`
+ 5. Flash it using `esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 esp32-idf4-20200902-v1.13.bin`
  6. Use Putty to connect to the board (Use connection type as serial, and set speed as 115200 and serial line to be COM3)
  7. When you want to copy a file to the board use command `ampy -p COM3 put <localFileOrFolder> {NameOnBoard}`
  8. Copy all files in `esp32` folder (including `\pub` folder with react output) to the device.
