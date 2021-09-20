@@ -14,6 +14,8 @@ const PowerConfig = () => {
         "lowBattery.minVoltage": '',
         "extraLowBattery.continousDeepSleepHours": '',
         "screenOnSeconds": '',
+        "voltageSensorPin": '',
+        "voltageMultiplier": '1',
         "mediumBattery.deepSleepDurationUtc": '',
         "mediumBattery.minVoltage": '',
         "highBattery.minVoltage": '',
@@ -21,6 +23,7 @@ const PowerConfig = () => {
         "lowBattery.deepSleepDurationUtc": '',
         "highBattery.cpuFreqMHz": ''
     });
+
     const [loading, setLoading] = useState(false);
     const [validationError, setValidationError] = useState([]);
 
@@ -38,6 +41,12 @@ const PowerConfig = () => {
 
         if (isNonNumber(powerConfig['screenOnSeconds'])) {
             err.push(`General: incorrect screen on time.`);
+        }
+        if (powerConfig['voltageSensorPin'] && isNonNumber(powerConfig['voltageSensorPin'])) {
+            err.push(`General: incorrect voltage sensor pin.`);
+        }
+        if (isNonNumber(powerConfig['voltageMultiplier'])) {
+            err.push(`General: incorrect voltage multiplier.`);
         }
         if (isNonNumber(powerConfig['highBattery.minVoltage'])) {
             err.push(`High power: incorrect min voltage.`);
@@ -108,19 +117,19 @@ const PowerConfig = () => {
 
     return (
         <Container className="power-config">
-            { loading ?
+            {loading ?
                 <Spinner animation="border" className="loader" data-testid="power-config-loading-state">
                     <span className="sr-only">Loading...</span>
                 </Spinner >
                 : null
             }
-            { error ?
+            {error ?
                 <Alert variant="danger" data-testid="power-config-error-state">
                     Connectivity error. Please reload.
                 </Alert>
                 : null
             }
-            { !loading ?
+            {!loading ?
                 <div>
                     <Card>
                         <Card.Body>
@@ -138,6 +147,34 @@ const PowerConfig = () => {
                                         onChange={(e) => onFieldChange('screenOnSeconds', isNonNumber(e.target.value) ? e.target.value : parseInt(e.target.value))} />
                                     <Form.Text muted>
                                         Screen is turned off after {powerConfig['screenOnSeconds']} seconds.
+                                    </Form.Text>
+                                </Form.Group>
+                            </Form.Row>
+                            <Form.Row>
+                                <Form.Group as={Col} xs={12} md={6}>
+                                    <Form.Label>Voltage sensor pin</Form.Label>
+                                    <Form.Control type="number"
+                                        value={powerConfig['voltageSensorPin']}
+                                        step="1"
+                                        min="0"
+                                        data-testid="voltage-sensor-pin"
+                                        onChange={(e) => onFieldChange('voltageSensorPin', isNonNumber(e.target.value) ? e.target.value : parseInt(e.target.value))} />
+                                    <Form.Text muted>
+                                        The voltage is read from pin {powerConfig['voltageSensorPin']} instead of the voltage supplied to the ESP32 chip.
+                                    </Form.Text>
+                                </Form.Group>
+                            </Form.Row>
+                            <Form.Row>
+                                <Form.Group as={Col} xs={12} md={6}>
+                                    <Form.Label>Voltage multiplier</Form.Label>
+                                    <Form.Control type="number"
+                                        value={powerConfig['voltageMultiplier']}
+                                        step="0.01"
+                                        min="0"
+                                        data-testid="voltage-multiplier"
+                                        onChange={(e) => onFieldChange('voltageMultiplier', isNonNumber(e.target.value) ? e.target.value : parseFloat(e.target.value))} />
+                                    <Form.Text muted>
+                                        The voltage is multiplied by {powerConfig['voltageMultiplier']} if the voltage divider is used. If no multiplication is required, set this field to 1.
                                     </Form.Text>
                                 </Form.Group>
                             </Form.Row>
@@ -278,6 +315,9 @@ const PowerConfig = () => {
                             </Form.Row>
                         </Card.Body>
                     </Card>
+                    <Alert variant="primary" className="alert-msg">
+                        These settings won't be applied until the next restart.
+                    </Alert>
                     {validationError.length > 0 ?
                         <Alert variant="danger" className="alert-msg" data-testid="power-config-validation-error">
                             {validationError.map((line, i) => (

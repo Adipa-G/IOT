@@ -17,12 +17,12 @@ import wlan.wlansetup as wlansetup
 class LocatorInit:
     def __init__(self):
         locator.log_service = logservice.LogService()
-        locator.battery_voltage = batteryvoltage.BatteryVoltage()
         locator.screen = screen.Screen()
         locator.config_service = configservice.ConfigService()
         locator.wlan_config = wlanconfigservice.WLANConfigService()
         locator.io_config_service = ioconfigservice.IoConfigService()
         locator.power_config_service = powerconfigservice.PowerConfigService()
+        locator.battery_voltage = batteryvoltage.BatteryVoltage()
         locator.io_service = ioservice.IoService()
         locator.power_manager = powermanager.PowerManager()
         locator.wlan_setup = wlansetup.WLANSetup()

@@ -13,6 +13,8 @@ const renderComponent = () => {
 
 const powerConfig = {
     "screenOnSeconds": 300,
+    "voltageSensorPin": 31,
+    "voltageMultiplier": 1.33,
     "highBattery.minVoltage": 4.0,
     "highBattery.cpuFreqMHz": 240,
     "mediumBattery.minVoltage": 3.2,
@@ -70,6 +72,8 @@ describe('when loaded', () => {
 
         await waitFor(() => {
             expect(screen.getByTestId('screen-on-seconds')).toHaveValue(300);
+            expect(screen.getByTestId('voltage-sensor-pin')).toHaveValue(31);
+            expect(screen.getByTestId('voltage-multiplier')).toHaveValue(1.33);
             expect(screen.getByTestId('high-power-min-voltage')).toHaveValue(4);
             expect(screen.getByTestId('high-power-cpu-freq')).toHaveValue(240);
             expect(screen.getByTestId('med-power-min-voltage')).toHaveValue(3.2);
@@ -107,6 +111,25 @@ describe('when saving', () => {
         await waitFor(() => {
             expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
             expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('General: incorrect screen on time');
+        });
+    });
+
+    test('validation error when incorrect voltage multiplier', async () => {
+        await act(async () => {
+            renderComponent();
+        });
+
+        await act(async () => {
+            fireEvent.change(screen.getByTestId('voltage-multiplier'), { target: { value: '' } })
+        });
+
+        await act(async () => {
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
+
+        await waitFor(() => {
+            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('General: incorrect voltage multiplier');
         });
     });
 

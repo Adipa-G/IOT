@@ -22,8 +22,10 @@ class PowerManager:
 
     async def manage_power(self):
         voltage = self._battery_voltage.get_voltage()
-        freq = machine.freq()
+        if voltage == 0:
+            voltage = 3.3
 
+        freq = machine.freq()
         self.__manage_screen()
         if self._power_cycle == POWER_MANAGEMENT_CYCLES:
             try:
