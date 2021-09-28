@@ -22,20 +22,17 @@ class PowerManager:
 
     async def manage_power(self):
         voltage = self._battery_voltage.get_voltage()
-        if voltage == 0:
-            voltage = 3.3
-
-        freq = machine.freq()
-        self.__manage_screen()
-        if self._power_cycle == POWER_MANAGEMENT_CYCLES:
-            try:
-                self.__adjust_cpu_frequency(voltage, freq)
-                self.__sleep_when_low_power(voltage)
+        if voltage > 0:
+            freq = machine.freq()
+            self.__manage_screen()
+            if self._power_cycle == POWER_MANAGEMENT_CYCLES:
                 self._power_cycle = 0
-            except Exception as e:
-                self._log_service.log("error running power management " + str(e))
-
-        self._power_cycle = self._power_cycle + 1
+                try:
+                    self.__adjust_cpu_frequency(voltage, freq)
+                    self.__sleep_when_low_power(voltage)
+                except Exception as e:
+                    self._log_service.log("error running power management " + str(e))
+            self._power_cycle = self._power_cycle + 1
         await uasyncio.sleep_ms(1000)
 
     def reset_screen_sleep(self):
@@ -67,20 +64,20 @@ class PowerManager:
                 machine.freq(target_freq)
 
     def __sleep_when_low_power(self, voltage):
-        if voltage < self._power_config["highBattery.minVoltage"]:
-            self.__sleep_for_duration(
-                self._power_config["mediumBattery.deepSleepDurationUtc"]
+        if voltage < self._power_config["lowBattery.minVoltage"]:
+            self.__deep_sleep(
+                self._power_config["extraLowBattery.continousDeepSleepHours"]
+                * 60
+                * 60
+                * 1000
             )
         elif voltage < self._power_config["mediumBattery.minVoltage"]:
             self.__sleep_for_duration(
                 self._power_config["lowBattery.deepSleepDurationUtc"]
             )
-        elif voltage < self._power_config["lowBattery.minVoltage"]:
-            self.__deep_sleep(
-                self._power_config["lowBattery.continousDeepSleepHours"]
-                * 60
-                * 60
-                * 1000
+        elif voltage < self._power_config["highBattery.minVoltage"]:
+            self.__sleep_for_duration(
+                self._power_config["mediumBattery.deepSleepDurationUtc"]
             )
 
     def __sleep_for_duration(self, duration):
@@ -98,16 +95,22 @@ class PowerManager:
         start_minute_of_day = start_hour * 60 + start_minute
         end_minute_of_day = end_hour * 60 + end_minute
 
-        if end_minute_of_day < start_minute_of_day:
-            end_minute_of_day = end_minute_of_day + 24 * 60
-            if current_minute_of_day < end_minute_of_day:
-                start_minute_of_day = start_minute_of_day + 24 * 60
-
+        time_to_sleep = 0
         if (
-            current_minute_of_day >= start_minute_of_day
+            start_minute_of_day < end_minute_of_day
+            and current_minute_of_day >= start_minute_of_day
             and current_minute_of_day < end_minute_of_day
         ):
             time_to_sleep = (end_minute_of_day - current_minute_of_day) * 60000
+        elif start_minute_of_day > end_minute_of_day:
+            if current_minute_of_day >= start_minute_of_day:
+                time_to_sleep = (
+                    end_minute_of_day + 24 * 60 - current_minute_of_day
+                ) * 60000
+            if current_minute_of_day < end_minute_of_day:
+                time_to_sleep = (end_minute_of_day - current_minute_of_day) * 60000
+
+        if time_to_sleep > 0:
             self._log_service.log("sleeping " + str(time_to_sleep))
             self.__deep_sleep(time_to_sleep)
 

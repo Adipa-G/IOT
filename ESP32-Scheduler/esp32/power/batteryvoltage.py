@@ -5,7 +5,7 @@ from micropython import const
 import ioc.locator as locator
 
 ADC_EN_PIN = const(14)
-VOLTAGE_PIN = const(34)
+DEFAULT_VOLTAGE_PIN = const(34)
 PIN_HIGH = const(1)
 PIN_LOW = const(0)
 
@@ -19,17 +19,18 @@ class BatteryVoltage:
         adc_en_pin.value(PIN_HIGH)
 
     def get_voltage(self):
-        voltage_read_pin = VOLTAGE_PIN
+        voltage_read_pin = DEFAULT_VOLTAGE_PIN
         voltage_miltiplier = 1
         if self._power_config["voltageSensorPin"] > 0:
             voltage_read_pin = self._power_config["voltageSensorPin"]
             voltage_miltiplier = self._power_config["voltageMultiplier"]
+
         try:
             measure_pin = machine.Pin(voltage_read_pin)
             adc = machine.ADC(measure_pin)
             adc.atten(machine.ADC.ATTN_11DB)
             adc.width(machine.ADC.WIDTH_12BIT)
-            if voltage_read_pin == VOLTAGE_PIN:
+            if voltage_read_pin == DEFAULT_VOLTAGE_PIN:
                 voltage = (adc.read() / 4095) * 7.26 - 0.1
             else:
                 voltage = (adc.read() / 4095) * 3.3
