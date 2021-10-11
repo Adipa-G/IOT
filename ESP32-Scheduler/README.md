@@ -68,6 +68,13 @@ How to setup.
     ![Power config](/ESP32-Scheduler/images/power-config.png?raw=true "Power Config")  
  
 
+### Implementation
+
+I have used this code to build an automatic water timer to water plants.
+
+![Diagram](/ESP32-Scheduler/images/diagram.png?raw=true "Diagram") 
+
+![Construction](/ESP32-Scheduler/images/construction.jpg?raw=true "Construction") 
 
 
  
