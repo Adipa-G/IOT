@@ -51,11 +51,11 @@ How to setup.
 2. Using the credentials in the screen, connect to the wireless network.
 3. Go to URL "http://esp32scheduler.org"
 4. This will bring up the web portal.
-5. In order to connect to a Wi-Fi endpoint select `Connect to Wi-Fi` option from the menu. This will show following screen. Set your Wi-Fi endpoint credentials and save. URL on new network is displayed in the screen. Make sure to connect your device to the Wi-Fi network before browsing to this URL.
+5. To connect to a Wi-Fi endpoint select `Connect to Wi-Fi` option from the menu. This will show following screen. Set your Wi-Fi endpoint credentials and save. URL on new network is displayed in the screen. Make sure to connect your device to the Wi-Fi network before browsing to this URL.
     
     ![Wi-Fi config](/ESP32-Scheduler/images/wi-fi-config.png?raw=true "Wi-Fi config") 
 
-6. In order to setup a schedule please use the `IO Schedule Configuration` from the menu. This allows the user to setup a new schedule for a given GPIO pin. 
+6. To setup a schedule please use the `IO Schedule Configuration` from the menu. This allows the user to setup a new schedule for a given GPIO pin. Note that the schedule is stored in UTC time. If there's a daylight savings, then the trigger time would change.
 
     ![IO config](/ESP32-Scheduler/images/io-config.png?raw=true "IO Config") 
 
@@ -63,7 +63,7 @@ How to setup.
 
     ![Dashboard](/ESP32-Scheduler/images/dashboard.png?raw=true "Dashboard")  
 
-8. In order to tweak power and sleep settings of the device please use the `Power Configuration` option from the menu. This screen allows user to tweak battery voltages for the power save modes if the device runs on limited power source like a solar panel combined battery. 
+8. To tweak power and sleep settings of the device please use the `Power Configuration` option from the menu. This screen allows user to tweak battery voltages for the power save modes if the device runs on limited power source like a solar panel combined battery. The Volage sensor pin can be any ADC input pins which is used to measure voltage input. Since the max voltage ESP32 ADC can handle is 3.3v, a voltage divider may be required if the battery voltage is higher than that. In this case voltage multiplier can be used to set the multiplier based on the divider ration to get correct voltage.  
 
     ![Power config](/ESP32-Scheduler/images/power-config.png?raw=true "Power Config")  
  
@@ -75,7 +75,3 @@ I have used this code to build an automatic water timer to water plants.
 ![Diagram](/ESP32-Scheduler/images/diagram.png?raw=true "Diagram") 
 
 ![Construction](/ESP32-Scheduler/images/construction.jpg?raw=true "Construction") 
-
-
- 
- 
