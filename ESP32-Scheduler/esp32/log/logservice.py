@@ -1,4 +1,5 @@
 import os
+import utime
 
 LOG_FILE = "log.log"
 LOG_BAK_FILE = "log.bak"
@@ -14,8 +15,22 @@ class LogService:
 
         f = None
         try:
+            curTime = utime.localtime()
+            curTimeStr = (
+                str(curTime[0])
+                + "-"
+                + str(curTime[1])
+                + "-"
+                + str(curTime[2])
+                + " "
+                + str(curTime[3])
+                + ":"
+                + str(curTime[4])
+                + ":"
+                + str(curTime[5])
+            )
             f = open("log.log", "a")
-            f.write(message + "\n")
+            f.write("[" + curTimeStr + "] " + message + "\n")
         except Exception as e:
             print("error writing log config " + str(e))
         finally:

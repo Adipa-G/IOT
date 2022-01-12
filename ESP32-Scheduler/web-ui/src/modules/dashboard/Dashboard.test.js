@@ -45,7 +45,7 @@ describe('when loaded', () => {
     var pad = (val) => ('' + val).padStart(2, '0');
     let utcTime = [2021, 8, 11, 14, 15, 0, 0, 0];
     let localTime = new Date(`${utcTime[0]}-${pad(utcTime[1])}-${pad(utcTime[2])}T${pad(utcTime[3])}:${pad(utcTime[4])}:${pad(utcTime[5])}Z`);
-    let localTimeFormattedStr = `${localTime.getFullYear()}-${pad(localTime.getMonth())}-${pad(localTime.getDate())} ${pad(localTime.getHours())}:${pad(localTime.getMinutes())}`;
+    let localTimeFormattedStr = `${localTime.getFullYear()}-${pad(localTime.getMonth() + 1)}-${pad(localTime.getDate())} ${pad(localTime.getHours())}:${pad(localTime.getMinutes())}`;
 
     beforeEach(() => {
         const health = { healthy: true, voltage: 3.32343, memory: 62232, tempreature: 12.32, time: utcTime };
