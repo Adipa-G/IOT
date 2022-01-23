@@ -1,5 +1,5 @@
 import machine
-import utime
+import time
 from micropython import const
 
 import ioc.locator as locator
@@ -12,6 +12,8 @@ PIN_LOW = const(0)
 
 class BatteryVoltage:
     def __init__(self):
+        self.current_value = 0
+        self._kalman_filter = locator.kalman_filter
         self._log_service = locator.log_service
         self._power_config_service = locator.power_config_service
         self._power_config = self._power_config_service.read_config()
@@ -19,6 +21,21 @@ class BatteryVoltage:
         adc_en_pin.value(PIN_HIGH)
 
     def get_voltage(self):
+        if self.current_value == 0:
+            first = self.__read_voltage()
+            time.sleep_ms(100)
+            second = self.__read_voltage()
+            time.sleep_ms(100)
+            third = self.__read_voltage()
+            self.current_value = (first + second + third) / 3
+
+        voltage = self.__read_voltage()
+        self.current_value = self._kalman_filter.apply_filter(
+            self.current_value, voltage
+        )
+        return self.current_value
+
+    def __read_voltage(self):
         voltage_read_pin = DEFAULT_VOLTAGE_PIN
         voltage_miltiplier = 1
         if self._power_config["voltageSensorPin"] > 0:
