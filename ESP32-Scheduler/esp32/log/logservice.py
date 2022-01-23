@@ -32,7 +32,21 @@ class LogService:
             f = open("log.log", "a")
             f.write("[" + curTimeStr + "] " + message + "\n")
         except Exception as e:
-            print("error writing log config " + str(e))
+            print("error writing log to log " + str(e))
+        finally:
+            if f != None:
+                f.close()
+
+    def get_logs(self):
+        self.__ensure_files()
+        f = None
+        try:
+            f = open("log.log", "r")
+            log_content = f.read()
+            return log_content
+        except Exception as e:
+            print("error reading log file " + str(e))
+            return "log reading error"
         finally:
             if f != None:
                 f.close()
