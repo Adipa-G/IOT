@@ -7,12 +7,10 @@ LOG_BAK_FILE = "log.bak"
 
 class LogService:
     def __init__(self):
+        self._enable_logs = False
         pass
 
     def log(self, message):
-        print(message)
-        self.__ensure_files()
-
         f = None
         try:
             curTime = utime.localtime()
@@ -29,10 +27,16 @@ class LogService:
                 + ":"
                 + str(curTime[5])
             )
-            f = open("log.log", "a")
-            f.write("[" + curTimeStr + "] " + message + "\n")
+            if self._enable_logs == True:
+                self.__ensure_files()
+                f = open("log.log", "a")
+                f.write("[" + curTimeStr + "] " + message + "\n")
+            else:
+                print("[" + curTimeStr + "] " + message + "\n")
         except Exception as e:
             print("error writing log to log " + str(e))
+            if f != None:
+                f.close()
         finally:
             if f != None:
                 f.close()
