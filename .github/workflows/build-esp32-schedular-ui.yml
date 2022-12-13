@@ -1,0 +1,47 @@
+name: UIReact
+run-name: Build and Test UI React
+on: 
+  [push]
+  
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      changed: ${{ steps.filter.outputs.path }}
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+    - name: Detect if any files changed related to this build task
+      uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          path:
+            - 'ESP32-Scheduler/**'
+    - run: echo "🍏 This job's status is ${{ job.status }}."
+            
+  build-and-test-solution:
+    needs: changes
+    #if: ${{ needs.changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Build and Test
+        run: |
+          cd ESP32-Scheduler/web-ui
+          npm install -g --prefer-offline react-scripts
+          npm install --prefer-offline
+          npm build
+          npm test
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+      
+      
+      
