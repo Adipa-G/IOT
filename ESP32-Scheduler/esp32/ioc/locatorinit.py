@@ -6,6 +6,7 @@ import display.screen as screen
 import dns.server as dns_server
 import io.ioservice as ioservice
 import ioc.locator as locator
+import filters.kalmanfilter as kalmanfilter
 import log.logservice as logservice
 import power.batteryvoltage as batteryvoltage
 import power.powermanager as powermanager
@@ -16,6 +17,7 @@ import wlan.wlansetup as wlansetup
 
 class LocatorInit:
     def __init__(self):
+        locator.kalman_filter = kalmanfilter.KalmanFilter()
         locator.log_service = logservice.LogService()
         locator.screen = screen.Screen()
         locator.config_service = configservice.ConfigService()

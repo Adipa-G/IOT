@@ -1,4 +1,5 @@
 import os
+import utime
 
 LOG_FILE = "log.log"
 LOG_BAK_FILE = "log.bak"
@@ -6,18 +7,50 @@ LOG_BAK_FILE = "log.bak"
 
 class LogService:
     def __init__(self):
+        self._enable_logs = False
         pass
 
     def log(self, message):
-        print(message)
-        self.__ensure_files()
-
         f = None
         try:
-            f = open("log.log", "a")
-            f.write(message + "\n")
+            curTime = utime.localtime()
+            curTimeStr = (
+                str(curTime[0])
+                + "-"
+                + str(curTime[1])
+                + "-"
+                + str(curTime[2])
+                + " "
+                + str(curTime[3])
+                + ":"
+                + str(curTime[4])
+                + ":"
+                + str(curTime[5])
+            )
+            if self._enable_logs == True:
+                self.__ensure_files()
+                f = open("log.log", "a")
+                f.write("[" + curTimeStr + "] " + message + "\n")
+            else:
+                print("[" + curTimeStr + "] " + message + "\n")
         except Exception as e:
-            print("error writing log config " + str(e))
+            print("error writing log to log " + str(e))
+            if f != None:
+                f.close()
+        finally:
+            if f != None:
+                f.close()
+
+    def get_logs(self):
+        self.__ensure_files()
+        f = None
+        try:
+            f = open("log.log", "r")
+            log_content = f.read()
+            return log_content
+        except Exception as e:
+            print("error reading log file " + str(e))
+            return "log reading error"
         finally:
             if f != None:
                 f.close()

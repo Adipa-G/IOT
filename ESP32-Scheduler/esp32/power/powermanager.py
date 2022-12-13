@@ -50,17 +50,17 @@ class PowerManager:
         if voltage > self._power_config["highBattery.minVoltage"]:
             target_freq = self._power_config["highBattery.cpuFreqMHz"] * 1000000
             if freq != target_freq:
-                self._log_service.log("high power")
+                self._log_service.log("high power - voltage: " + str(voltage) + "V")
                 machine.freq(target_freq)
         elif voltage > self._power_config["mediumBattery.minVoltage"]:
             target_freq = self._power_config["mediumBattery.cpuFreqMHz"] * 1000000
             if freq != target_freq:
-                self._log_service.log("med power")
+                self._log_service.log("med power - voltage: " + str(voltage) + "V")
                 machine.freq(target_freq)
         else:
             target_freq = self._power_config["lowBattery.cpuFreqMHz"] * 1000000
             if freq != target_freq:
-                self._log_service.log("low power")
+                self._log_service.log("low power - voltage: " + str(voltage) + "V")
                 machine.freq(target_freq)
 
     def __sleep_when_low_power(self, voltage):
