@@ -1,5 +1,5 @@
-name: UIReact
-run-name: Build and Test UI React
+name: ESP32SchedulerUI
+run-name: Build and Test ESP32-Scheduler UI
 on: 
   [push]
   
@@ -24,7 +24,7 @@ jobs:
             
   build-and-test-solution:
     needs: changes
-    #if: ${{ needs.changes.outputs.changed == 'true' }}
+    if: ${{ needs.changes.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
