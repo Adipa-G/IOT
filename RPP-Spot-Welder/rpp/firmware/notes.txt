@@ -1,0 +1,1 @@
+Connect the device while bootselect is pressed. Then copy this file to the device.
