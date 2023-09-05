@@ -11,8 +11,8 @@ for device in devices:
  print("Hexa address: ",hex(device))
 
 from machine import I2C
-from lcd_api import LcdApi
-from pico_i2c_lcd import I2cLcd
+from display.lcd_api import LcdApi
+from display.pico_i2c_lcd import I2cLcd
 
 I2C_ADDR     = device
 I2C_NUM_ROWS = 2
@@ -23,12 +23,12 @@ lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
 lcd.putstr("Hello from\n"+chr(0)+" test "+chr(0))
 
 
-from rotary import Rotary
+from rotary.encoder import Rotary
 import utime as time
 from machine import Pin
 
 # GPIO Pins 16 and 17 are for the encoder pins. 22 is the button press switch.
-rotary = Rotary(16, 17, 18)
+rotary = Rotary(20, 22, 21)
 val = 0
 
 def rotary_changed(change):
