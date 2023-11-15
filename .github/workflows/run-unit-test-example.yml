@@ -1,0 +1,43 @@
+name: UnitTestExample
+run-name: Run Tests on Unit Test Example
+on: 
+  [push]
+  
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      changed: ${{ steps.filter.outputs.path }}
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+    - name: Detect if any files changed related to this build task
+      uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          path:
+            - 'Micropython-Unit-Test-Example/**'
+    - run: echo "🍏 This job's status is ${{ job.status }}."
+            
+  test-solution:
+    needs: changes
+    if: ${{ needs.changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+            python-version: '3.10' 
+      - name: Test
+        run: |
+          cd Micropython-Unit-Test-Example
+          python run_tests.py
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+      
+      
+      
