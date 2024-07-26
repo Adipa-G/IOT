@@ -1,7 +1,7 @@
 name: UnitTestExample
 run-name: Run Tests on Unit Test Example
 on: 
-  [push]
+  [push, workflow_dispatch]
   
 jobs:
   changes:
