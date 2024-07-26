@@ -1,7 +1,7 @@
 name: ESP32SchedulerUI
 run-name: Build and Test ESP32-Scheduler UI
 on: 
-  [push]
+  [push, workflow_dispatch]
   
 jobs:
   changes:
