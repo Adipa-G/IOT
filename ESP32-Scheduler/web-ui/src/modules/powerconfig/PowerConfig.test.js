@@ -5,7 +5,6 @@ import TimeUtils from '../../services/TimeUtils';
 
 import PowerConfig from './PowerConfig';
 
-
 const powerConfig = {
     "screenOnSeconds": 300,
     "voltageSensorPin": 31,
