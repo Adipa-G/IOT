@@ -38,7 +38,7 @@ jobs:
           cd ESP32-Scheduler/web-ui
           npm install -g --prefer-offline react-scripts
           npm install --prefer-offline
-          npm build
+          npm run build
           npm test
       - run: echo "🍏 This job's status is ${{ job.status }}."
       
