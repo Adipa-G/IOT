@@ -45,12 +45,17 @@ files.forEach(file => {
     const zip = zlib.createGzip();
     readStream.pipe(zip).pipe(writeStream).on('finish', (err) => {
         if (err) console.log('ERROR: ' + err);
-    })
+    }).on('close', () => {
+        fs.rmSync(file);
+    });
 });
 
 fs.copyFile('serve.json', 'build/serve.json', (err) => {
     if (err) console.log('ERROR: ' + err);
 });
 
-fs.rmdirSync('build/static', { recursive: true });
 searchReplaceFile([/\/static\/css/g, /\/static\/js/g, /.css"/g, /.js"/g], ['', '', '.css.gz"', '.js.gz"'], 'build/index.html');
+
+setTimeout(() => {
+    fs.rmSync('build/static', { recursive: true });
+}, 1000);
