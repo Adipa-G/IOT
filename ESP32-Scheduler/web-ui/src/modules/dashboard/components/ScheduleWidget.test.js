@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, fireEvent, screen, waitFor } from '@testing-library/react';
 
 import ApiService from '../../../services/ApiService';
 import TimeUtils from '../../../services/TimeUtils';
@@ -10,7 +10,7 @@ const renderComponent = () => {
     render(
         <ScheduleWidget schedule={schedule}></ScheduleWidget>
     );
-}
+} 
 
 describe('when loading', () => {
     beforeEach(() => {
@@ -19,16 +19,16 @@ describe('when loading', () => {
     });
 
     test('call the API to load pin state', async () => {
-        await act(async () => { renderComponent(); });
+        const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
+        render(<ScheduleWidget schedule={schedule}/>);
 
-        await waitFor(() => {
-            expect(ApiService.getPinValue).toHaveBeenCalledTimes(1);
-            expect(ApiService.getPinValue).toHaveBeenCalledWith(4);
-        });
+        expect(ApiService.getPinValue).toHaveBeenCalledTimes(1);
+        expect(ApiService.getPinValue).toHaveBeenCalledWith(4);
     });
 
     test('set the button variant', async () => {
-        await act(async () => { renderComponent(); });
+        const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
+        render(<ScheduleWidget schedule={schedule}/>);
 
         await waitFor(() => {
             expect(screen.getByTestId('schedule-widget-off-button')).toHaveClass('btn-success');
@@ -37,10 +37,12 @@ describe('when loading', () => {
     });
 
     test('show the schedule in local time', async () => {
+        const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
+
         const timeTokens = schedule.highDurationUtc.split('-');
         const localTime = `${TimeUtils.timeToLocal(timeTokens[0])}-${TimeUtils.timeToLocal(timeTokens[1])}`;
-
-        await act(async () => { renderComponent(); });
+        
+        render(<ScheduleWidget schedule={schedule}/>);
 
         await waitFor(() => {
             expect(screen.getByTestId('schedule-widget-start-and-end-time')).toHaveTextContent(localTime);
@@ -54,7 +56,8 @@ describe('when loading error', () => {
     });
 
     test('shows alert', async () => {
-        await act(async () => { renderComponent(); });
+        const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
+        render(<ScheduleWidget schedule={schedule}/>);
 
         await waitFor(() => {
             expect(screen.queryByTestId('schedule-widget-error-state')).toBeInTheDocument();
@@ -70,9 +73,11 @@ describe('when state changed', () => {
 
         await act(async () => { renderComponent(); });
 
+        expect(screen.queryByTestId('schedule-widget-on-button')).toBeVisible();
+
+        fireEvent.click(screen.queryByTestId('schedule-widget-on-button'));
+
         await waitFor(() => {
-            expect(screen.queryByTestId('schedule-widget-on-button')).toBeVisible();
-            screen.queryByTestId('schedule-widget-on-button').click();
             expect(ApiService.setPinValue).toHaveBeenCalledTimes(1);
             expect(ApiService.setPinValue).toHaveBeenCalledWith(4, "1");
             expect(screen.getByTestId('schedule-widget-off-button')).toHaveClass('btn-success');
@@ -86,9 +91,11 @@ describe('when state changed', () => {
 
         await act(async () => { renderComponent(); });
 
+        expect(screen.queryByTestId('schedule-widget-off-button')).toBeVisible();
+
+        fireEvent.click(screen.queryByTestId('schedule-widget-off-button'));
+
         await waitFor(() => {
-            expect(screen.queryByTestId('schedule-widget-off-button')).toBeVisible();
-            screen.queryByTestId('schedule-widget-off-button').click();
             expect(ApiService.setPinValue).toHaveBeenCalledTimes(1);
             expect(ApiService.setPinValue).toHaveBeenCalledWith(4, "0");
             expect(screen.getByTestId('schedule-widget-off-button')).toHaveClass('btn-secondary');

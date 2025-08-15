@@ -1,15 +1,9 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 import ApiService from '../../services/ApiService';
 import TimeUtils from '../../services/TimeUtils';
 
 import PowerConfig from './PowerConfig';
-
-const renderComponent = () => {
-    render(
-        <PowerConfig></PowerConfig>
-    );
-}
 
 const powerConfig = {
     "screenOnSeconds": 300,
@@ -28,15 +22,13 @@ const powerConfig = {
 
 describe('when loading', () => {
     beforeEach(() => {
-        jest.spyOn(ApiService, 'getPowerConfig').mockReturnValue(new Promise(() => { })); //never resolving promise
+        jest.spyOn(ApiService, 'getPowerConfig').mockReturnValue(Promise.resolve(powerConfig)); //never resolving promise
     });
 
     test('shows the loader', async () => {
-        await act(async () => { renderComponent(); });
+        render(<PowerConfig/>);
 
-        await waitFor(() => {
-            expect(screen.queryByTestId('power-config-loading-state')).toBeInTheDocument();
-        });
+        expect(screen.queryByTestId('power-config-loading-state')).toBeInTheDocument();
     });
 })
 
@@ -46,8 +38,8 @@ describe('when loading error', () => {
     });
 
     test('shows alert', async () => {
-        await act(async () => { renderComponent(); });
-
+        render(<PowerConfig/>);
+        
         await waitFor(() => {
             expect(screen.queryByTestId('power-config-error-state')).toBeInTheDocument();
         });
@@ -60,7 +52,7 @@ describe('when loaded', () => {
     });
 
     test('call the API to load io config', async () => {
-        await act(async () => { renderComponent(); });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
             expect(ApiService.getPowerConfig).toHaveBeenCalledTimes(1);
@@ -68,7 +60,7 @@ describe('when loaded', () => {
     });
 
     test('bind values correctly', async () => {
-        await act(async () => { renderComponent(); });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
             expect(screen.getByTestId('screen-on-seconds')).toHaveValue(300);
@@ -96,173 +88,127 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect screen on time', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('screen-on-seconds'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('General: incorrect screen on time');
+            expect(screen.getByTestId('screen-on-seconds')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('screen-on-seconds'), { target: { value: '' } })
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('General: incorrect screen on time');
     });
 
     test('validation error when incorrect voltage multiplier', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('voltage-multiplier'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('General: incorrect voltage multiplier');
+            expect(screen.getByTestId('voltage-multiplier')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('voltage-multiplier'), { target: { value: '' } })
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('General: incorrect voltage multiplier');
     });
 
     test('validation error when incorrect high power min voltage', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('high-power-min-voltage'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('High power: incorrect min voltage');
+            expect(screen.getByTestId('high-power-min-voltage')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('high-power-min-voltage'), { target: { value: '' } });
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('High power: incorrect min voltage');
     });
 
     test('validation error when incorrect medium power min voltage', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('med-power-min-voltage'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Medium power: incorrect min voltage');
+            expect(screen.getByTestId('med-power-min-voltage')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('med-power-min-voltage'), { target: { value: '' } })
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Medium power: incorrect min voltage');
     });
 
     test('validation error when high power min voltage less than medium power min voltage', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('high-power-min-voltage'), { target: { value: '3' } })
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('med-power-min-voltage'), { target: { value: '4' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Medium power: min voltage should be less than min voltage of high power');
+            expect(screen.getByTestId('high-power-min-voltage')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('high-power-min-voltage'), { target: { value: '3' } });
+        fireEvent.change(screen.getByTestId('med-power-min-voltage'), { target: { value: '4' } });
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Medium power: min voltage should be less than min voltage of high power');
     });
 
     test('validation error when incorrect low power min voltage', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('low-power-min-voltage'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Low power: incorrect min voltage');
+            expect(screen.getByTestId('low-power-min-voltage')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('low-power-min-voltage'), { target: { value: '' } });
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Low power: incorrect min voltage');
     });
 
     test('validation error when med power min voltage less than low power min voltage', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('med-power-min-voltage'), { target: { value: '3' } })
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('low-power-min-voltage'), { target: { value: '4' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Low power: min voltage should be less than min voltage of medium power');
+            expect(screen.getByTestId('med-power-min-voltage')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('med-power-min-voltage'), { target: { value: '3' } });
+        fireEvent.change(screen.getByTestId('low-power-min-voltage'), { target: { value: '4' } });
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Low power: min voltage should be less than min voltage of medium power');
     });
 
     test('validation error when incorrect extra low power sleep', async () => {
-        await act(async () => {
-            renderComponent();
-        });
-
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('ex-low-power-sleep-duration'), { target: { value: '' } })
-        });
-
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        render(<PowerConfig/>);
 
         await waitFor(() => {
-            expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
-            expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Extra low power: incorrect sleep duration');
+            expect(screen.getByTestId('ex-low-power-sleep-duration')).toBeInTheDocument();
         });
+
+        fireEvent.change(screen.getByTestId('ex-low-power-sleep-duration'), { target: { value: '' } })
+        fireEvent.click(screen.getByTestId('save-button'));
+
+        expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(0);
+        expect(screen.getByTestId('power-config-validation-error')).toHaveTextContent('Extra low power: incorrect sleep duration');
     });
 
     test('call the API to save io config', async () => {
-        await act(async () => {
-            renderComponent();
+        render(<PowerConfig/>);
+
+        await waitFor(() => {
+            expect(screen.getByTestId('save-button')).toBeInTheDocument();
         });
 
-        await act(async () => {
-            fireEvent.click(screen.getByTestId('save-button'));
-        });
+        fireEvent.click(screen.getByTestId('save-button'));
 
         await waitFor(() => {
             expect(ApiService.setPowerConfig).toHaveBeenCalledTimes(1);

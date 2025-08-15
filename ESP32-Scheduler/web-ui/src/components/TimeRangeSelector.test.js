@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react'
+import '@testing-library/jest-dom'
 
 import TimeRangeSelector from './TimeRangeSelector';
 
@@ -13,54 +14,40 @@ const renderComponent = (range) => {
 
 describe('when loaded', () => {
     test('set defailt value if no range set', async () => {
-        await act(async () => { renderComponent(); });
+        render(<TimeRangeSelector/>);
 
-        await waitFor(() => {
-            expect(screen.getByTestId('from-time')).toHaveValue(TimeUtil.timeToLocal('00:00'));
-            expect(screen.getByTestId('to-time')).toHaveValue(TimeUtil.timeToLocal('00:01'));
-        });
+        expect(screen.getByTestId('from-time')).toHaveValue(TimeUtil.timeToLocal('00:00'));
+        expect(screen.getByTestId('to-time')).toHaveValue(TimeUtil.timeToLocal('00:01'));
     });
 
     test('convert value to local if range is set', async () => {
         const start = '21:10';
         const end = '12:10';
-        await act(async () => { renderComponent(`${start}-${end}`); });
+        render(<TimeRangeSelector range={`${start}-${end}`} onTimeChange={(val) => updatedValue = val}/>);
 
-        await waitFor(() => {
-            expect(screen.getByTestId('from-time')).toHaveValue(TimeUtil.timeToLocal(start));
-            expect(screen.getByTestId('to-time')).toHaveValue(TimeUtil.timeToLocal(end));
-        });
+        expect(screen.getByTestId('from-time')).toHaveValue(TimeUtil.timeToLocal(start));
+        expect(screen.getByTestId('to-time')).toHaveValue(TimeUtil.timeToLocal(end));
     });
 })
 
 describe('input changed', () => {
     test('when from time changed call and fire time change event with utc time', async () => {
-        await act(async () => {
-            renderComponent('10:00-10:10');
-        });
+        let updatedValue = '';
+        render(<TimeRangeSelector range={'10:00-10:10'} onTimeChange={(val) => updatedValue = val}></TimeRangeSelector>);
+        
+        fireEvent.change(screen.getByTestId('from-time'), { target: { value: '10:05' } });
 
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('from-time'), { target: { value: '10:05' } });
-        });
-
-        await waitFor(() => {
-            expect(screen.getByTestId('from-time')).toHaveValue('10:05');
-            expect(updatedValue).toBe(`${TimeUtil.timeToUtc('10:05')}-10:10`);
-        });
+        expect(screen.getByTestId('from-time')).toHaveValue('10:05');
+        expect(updatedValue).toBe(`${TimeUtil.timeToUtc('10:05')}-10:10`);
     });
 
     test('when to time changed call and fire time change event with utc time', async () => {
-        await act(async () => {
-            renderComponent('10:00-10:05');
-        });
+        let updatedValue = '';
+        render(<TimeRangeSelector range={'10:00-10:05'} onTimeChange={(val) => updatedValue = val}></TimeRangeSelector>);
 
-        await act(async () => {
-            fireEvent.change(screen.getByTestId('to-time'), { target: { value: '10:10' } });
-        });
+        fireEvent.change(screen.getByTestId('to-time'), { target: { value: '10:10' } });
 
-        await waitFor(() => {
-            expect(screen.getByTestId('to-time')).toHaveValue('10:10');
-            expect(updatedValue).toBe(`10:00-${TimeUtil.timeToUtc('10:10')}`);
-        });
+        expect(screen.getByTestId('to-time')).toHaveValue('10:10');
+        expect(updatedValue).toBe(`10:00-${TimeUtil.timeToUtc('10:10')}`);
     });
 })

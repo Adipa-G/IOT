@@ -1,5 +1,6 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from "react-router-dom";
+import { render, fireEvent, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom';
+import '@testing-library/jest-dom'
 
 import Menu from './Menu';
 import Routes from './../routes';
@@ -13,18 +14,17 @@ const renderComponent = () => {
 }
 
 describe('when menu rendered', () => {
-    beforeEach(() => {
-    });
-
     test('shows all menus', async () => {
-        await act(async () => { renderComponent(); });
+        render(
+            <MemoryRouter initialEntries={Routes}>
+                <Menu />
+            </MemoryRouter>
+        );
 
-        await waitFor(() => {
-            expect(screen.queryByTestId('menu-admin')).toBeInTheDocument();
-            expect(screen.queryByTestId('menu-dashboard')).toBeInTheDocument();
-            expect(screen.queryByTestId('menu-pin-config')).toBeInTheDocument();
-            expect(screen.queryByTestId('menu-power-config')).toBeInTheDocument();
-            expect(screen.queryByTestId('menu-connect-to-wifi')).toBeInTheDocument();
-        });
+        expect(screen.queryByTestId('menu-admin')).toBeInTheDocument();
+        expect(screen.queryByTestId('menu-dashboard')).toBeInTheDocument();
+        expect(screen.queryByTestId('menu-pin-config')).toBeInTheDocument();
+        expect(screen.queryByTestId('menu-power-config')).toBeInTheDocument();
+        expect(screen.queryByTestId('menu-connect-to-wifi')).toBeInTheDocument();
     });
 })

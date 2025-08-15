@@ -4,13 +4,6 @@ import ApiService from '../../services/ApiService';
 
 import Dashboard from './Dashboard';
 
-const renderComponent = () => {
-
-    render(
-        <Dashboard></Dashboard>
-    );
-}
-
 describe('when loading', () => {
     beforeEach(() => {
         jest.spyOn(ApiService, 'getIoConfig').mockReturnValue(Promise.resolve({ schedules: [] }));
@@ -18,7 +11,7 @@ describe('when loading', () => {
     });
 
     test('shows the loader', async () => {
-        await act(async () => { renderComponent(); });
+        await act(async () => { render(<Dashboard/>); });
 
         await waitFor(() => {
             expect(screen.queryByTestId('dashboard-loading-state')).toBeInTheDocument();
@@ -33,7 +26,7 @@ describe('when loading error', () => {
     });
 
     test('shows alert', async () => {
-        await act(async () => { renderComponent(); });
+        await act(async () => { render(<Dashboard/>); });
 
         await waitFor(() => {
             expect(screen.queryByTestId('dashboard-error-state')).toBeInTheDocument();
@@ -63,7 +56,7 @@ describe('when loaded', () => {
     });
 
     test('shows status widgets', async () => {
-        await act(async () => { renderComponent(); });
+        await act(async () => { render(<Dashboard/>); });
 
         await waitFor(() => {
             expect(screen.queryByTestId('dashboard-memory-widget')).toHaveTextContent('62.23 kB');
@@ -76,8 +69,9 @@ describe('when loaded', () => {
     });
 
     test('refresh widget after 10 seconds', async () => {
+        await act(async () => { render(<Dashboard/>); });
+
         await act(async () => {
-            renderComponent();
             jest.advanceTimersByTime(11000);
         });
 
@@ -87,9 +81,7 @@ describe('when loaded', () => {
     });
 
     test('show config widget', async () => {
-        await act(async () => {
-            renderComponent();
-        });
+        await act(async () => { render(<Dashboard/>); });
 
         await waitFor(() => {
             expect(screen.queryByTestId('schedule-widget-pin-4')).toBeVisible();
