@@ -12,39 +12,27 @@ const ScheduleWidget = (props) => {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        let unmounted = false
         setLoading(true);
         ApiService.getPinValue(props.schedule.pin).then((result) => {
-            if (!unmounted) {
-                setLoading(false);
-                setPinValue(result.value);
-                setError(false);
-            }
+            setLoading(false);
+            setPinValue(result.value);
+            setError(false);
         }).catch(() => {
             setLoading(false);
             setError(true);
         });
-        return () => {
-            unmounted = true
-        }
     }, [props.schedule.pin]);
 
     let setSwitch = (val) => {
-        let unmounted = false
         setLoading(true);
         ApiService.setPinValue(props.schedule.pin, val).then(() => {
-            if (!unmounted) {
-                setLoading(false);
-                setPinValue(val);
-                setError(false);
-            }
+            setLoading(false);
+            setPinValue(val);
+            setError(false);
         }).catch(() => {
             setLoading(false);
             setError(true);
         });
-        return () => {
-            unmounted = true
-        }
     };
 
     let getHighDurationLocal = () => {

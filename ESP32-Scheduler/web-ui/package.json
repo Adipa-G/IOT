@@ -2,7 +2,7 @@
   "name": "esp32-water-timer-ui",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://10.112.209.9",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@testing-library/jest-dom": "^6.7.0",
     "@testing-library/react": "^16.3.0",

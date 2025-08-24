@@ -12,19 +12,21 @@ describe('when reboot', () => {
     });
 
     afterEach(() => {
-        jest.runOnlyPendingTimers()
-        jest.useRealTimers()
+        jest.useRealTimers();
     });
 
     test('show loading while health is waiting', async () => {
         jest.spyOn(ApiService, 'reboot').mockReturnValue(new Promise(() => { }));
         jest.spyOn(ApiService, 'getHealth').mockReturnValue(new Promise(() => { }));
 
-        await act(async() => {render(<Admin></Admin>)});
+        await act(async() => {render(<Admin/>)});
 
         await act(async() => {fireEvent.click(screen.getByTestId('reboot-button'))});
 
-        await act(async() => {jest.advanceTimersByTime(11000)});
+        await act(async() => {
+            jest.advanceTimersByTime(11000);
+            jest.clearAllTimers();
+        });
 
         expect(screen.queryByTestId('admin-loading-state')).toBeInTheDocument();
         expect(screen.queryByTestId('reboot-button')).not.toBeInTheDocument();
@@ -34,11 +36,14 @@ describe('when reboot', () => {
         jest.spyOn(ApiService, 'reboot').mockReturnValue(new Promise(() => { }));
         jest.spyOn(ApiService, 'getHealth').mockReturnValue(Promise.resolve({}));
 
-        await act(async() => {render(<Admin></Admin>)});
+        await act(async() => {render(<Admin/>)});
 
         await act(async() => {fireEvent.click(screen.getByTestId('reboot-button'))});
 
-        await act(async() => {jest.advanceTimersByTime(11000)});
+        await act(async() => {
+            jest.advanceTimersByTime(11000);
+            jest.clearAllTimers();
+        });
 
         expect(screen.queryByTestId('reboot-button')).toBeInTheDocument();
         expect(screen.queryByTestId('admin-loading-state')).not.toBeInTheDocument();

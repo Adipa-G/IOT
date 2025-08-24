@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import ApiService from '../../services/ApiService';
 import TimeUtils from '../../services/TimeUtils';
@@ -11,7 +11,7 @@ describe('when loading', () => {
     });
 
     test('shows the loader', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
         
         expect(screen.queryByTestId('pin-config-loading-state')).toBeInTheDocument();
     });
@@ -23,7 +23,7 @@ describe('when loading error', () => {
     });
 
     test('shows alert', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.queryByTestId('pin-config-error-state')).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('when loaded', () => {
     });
 
     test('call the API to load io config', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(ApiService.getIoConfig).toHaveBeenCalledTimes(1);
@@ -52,7 +52,7 @@ describe('when loaded', () => {
     });
 
     test('bind values correctly', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.getAllByTestId('pin-number-input')[0]).toHaveValue(2);
@@ -80,41 +80,47 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect pin', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('pin-number-input')).toBeInTheDocument();
         });
 
-        fireEvent.change(screen.getByTestId('pin-number-input'), { target: { value: 'x' } })
-        fireEvent.click(screen.getByTestId('save-button'));
+        await act(async () => { 
+            fireEvent.change(screen.getByTestId('pin-number-input'), { target: { value: 'x' } })
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
 
         expect(ApiService.setIoConfig).toHaveBeenCalledTimes(0);
         expect(screen.getByTestId('pin-config-validation-error')).toHaveTextContent('incorrect pin number');
     });
 
     test('validation error when incorrect title', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('pin-title-input')).toBeInTheDocument();
         });
 
-        fireEvent.change(screen.getByTestId('pin-title-input'), { target: { value: '' } })
-        fireEvent.click(screen.getByTestId('save-button'));
+        await act(async () => { 
+            fireEvent.change(screen.getByTestId('pin-title-input'), { target: { value: '' } })
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
 
         expect(ApiService.setIoConfig).toHaveBeenCalledTimes(0);
         expect(screen.getByTestId('pin-config-validation-error')).toHaveTextContent('incorrect title');
     });
 
     test('call the API to save io config', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('save-button')).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByTestId('save-button'));
+        await act(async () => { 
+            fireEvent.click(screen.getByTestId('save-button'));
+        });
 
         await waitFor(() => {
             expect(ApiService.setIoConfig).toHaveBeenCalledTimes(1);
@@ -133,13 +139,15 @@ describe('when removing a config', () => {
     });
 
     test('remove button clicked', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('remove-button')).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByTestId('remove-button'));
+        await act(async () => { 
+            fireEvent.click(screen.getByTestId('remove-button'));
+        });
 
         expect(screen.queryAllByTestId('pin-config-container').length).toBe(0);
     });
@@ -156,13 +164,15 @@ describe('when adding a config', () => {
     });
 
     test('remove add clicked', async () => {
-        render(<PinConfig/>);
+        await act(async () => { render(<PinConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('add-button')).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByTestId('add-button'));
+        await act(async () => { 
+            fireEvent.click(screen.getByTestId('add-button'));
+        });
 
         expect(screen.queryAllByTestId('pin-config-container').length).toBe(2);
     });

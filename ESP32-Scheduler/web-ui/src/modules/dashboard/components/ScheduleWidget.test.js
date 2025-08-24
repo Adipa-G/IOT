@@ -20,7 +20,7 @@ describe('when loading', () => {
 
     test('call the API to load pin state', async () => {
         const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
-        render(<ScheduleWidget schedule={schedule}/>);
+        await act(async() => {render(<ScheduleWidget schedule={schedule}/>)});
 
         expect(ApiService.getPinValue).toHaveBeenCalledTimes(1);
         expect(ApiService.getPinValue).toHaveBeenCalledWith(4);
@@ -28,7 +28,7 @@ describe('when loading', () => {
 
     test('set the button variant', async () => {
         const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
-        render(<ScheduleWidget schedule={schedule}/>);
+        await act(async() => {render(<ScheduleWidget schedule={schedule}/>)});
 
         await waitFor(() => {
             expect(screen.getByTestId('schedule-widget-off-button')).toHaveClass('btn-success');
@@ -42,7 +42,7 @@ describe('when loading', () => {
         const timeTokens = schedule.highDurationUtc.split('-');
         const localTime = `${TimeUtils.timeToLocal(timeTokens[0])}-${TimeUtils.timeToLocal(timeTokens[1])}`;
         
-        render(<ScheduleWidget schedule={schedule}/>);
+        await act(async() => {render(<ScheduleWidget schedule={schedule}/>)});
 
         await waitFor(() => {
             expect(screen.getByTestId('schedule-widget-start-and-end-time')).toHaveTextContent(localTime);
@@ -57,7 +57,7 @@ describe('when loading error', () => {
 
     test('shows alert', async () => {
         const schedule = { pin: 4, highDurationUtc: '10:10-11:40' };
-        render(<ScheduleWidget schedule={schedule}/>);
+        await act(async() => {render(<ScheduleWidget schedule={schedule}/>)});
 
         await waitFor(() => {
             expect(screen.queryByTestId('schedule-widget-error-state')).toBeInTheDocument();

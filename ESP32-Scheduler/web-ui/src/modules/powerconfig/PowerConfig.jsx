@@ -93,24 +93,15 @@ const PowerConfig = () => {
     };
 
     useEffect(() => {
-        let unmounted = false;
         setLoading(true);
         ApiService.getPowerConfig().then((result) => {
-            if (!unmounted) {
-                setLoading(false);
-                setPowerConfig(result);
-                setError(false);
-            }
+            setLoading(false);
+            setPowerConfig(result);
+            setError(false);
         }).catch(() => {
-            if (!unmounted) {
-                setLoading(false);
-                setError(true);
-            }
+            setLoading(false);
+            setError(true);
         });
-
-        return () => {
-            unmounted = true
-        }
     }, []);
 
 

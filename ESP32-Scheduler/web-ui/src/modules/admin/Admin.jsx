@@ -11,29 +11,20 @@ const Admin = () => {
     const timerRef = useRef(null);
 
     useEffect(() => {
-        let unmounted = false;
         if (!timerRef.current) {
             timerRef.current = setInterval(() => {
                 ApiService.getHealth().then(() => {
-                    if (!unmounted) {
-                        setLoading(false);
-                        setError(false);
-                        if (!timerRef.current) {
-                            clearTimeout(timerRef.current);
-                        }
+                    setLoading(false);
+                    setError(false);
+                    if (!timerRef.current) {
+                        clearTimeout(timerRef.current);
                     }
                 });
             }, 10000);
         }
 
-        if (unmounted) {
-            if (!timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        }
-
-        return () => {
-            unmounted = true
+        if (!timerRef.current) {
+            clearTimeout(timerRef.current);
         }
     }, []);
 

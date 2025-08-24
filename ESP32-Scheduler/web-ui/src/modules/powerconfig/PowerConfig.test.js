@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 import ApiService from '../../services/ApiService';
 import TimeUtils from '../../services/TimeUtils';
@@ -22,11 +22,11 @@ const powerConfig = {
 
 describe('when loading', () => {
     beforeEach(() => {
-        jest.spyOn(ApiService, 'getPowerConfig').mockReturnValue(Promise.resolve(powerConfig)); //never resolving promise
+        jest.spyOn(ApiService, 'getPowerConfig').mockReturnValue(new Promise(() => { })); //never resolving promise
     });
 
     test('shows the loader', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         expect(screen.queryByTestId('power-config-loading-state')).toBeInTheDocument();
     });
@@ -38,7 +38,7 @@ describe('when loading error', () => {
     });
 
     test('shows alert', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
         
         await waitFor(() => {
             expect(screen.queryByTestId('power-config-error-state')).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('when loaded', () => {
     });
 
     test('call the API to load io config', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(ApiService.getPowerConfig).toHaveBeenCalledTimes(1);
@@ -60,7 +60,7 @@ describe('when loaded', () => {
     });
 
     test('bind values correctly', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('screen-on-seconds')).toHaveValue(300);
@@ -88,7 +88,7 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect screen on time', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('screen-on-seconds')).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect voltage multiplier', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('voltage-multiplier')).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect high power min voltage', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('high-power-min-voltage')).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect medium power min voltage', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('med-power-min-voltage')).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe('when saving', () => {
     });
 
     test('validation error when high power min voltage less than medium power min voltage', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('high-power-min-voltage')).toBeInTheDocument();
@@ -159,7 +159,7 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect low power min voltage', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('low-power-min-voltage')).toBeInTheDocument();
@@ -173,7 +173,7 @@ describe('when saving', () => {
     });
 
     test('validation error when med power min voltage less than low power min voltage', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('med-power-min-voltage')).toBeInTheDocument();
@@ -188,7 +188,7 @@ describe('when saving', () => {
     });
 
     test('validation error when incorrect extra low power sleep', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('ex-low-power-sleep-duration')).toBeInTheDocument();
@@ -202,7 +202,7 @@ describe('when saving', () => {
     });
 
     test('call the API to save io config', async () => {
-        render(<PowerConfig/>);
+        await act(async () => { render(<PowerConfig/>); });
 
         await waitFor(() => {
             expect(screen.getByTestId('save-button')).toBeInTheDocument();

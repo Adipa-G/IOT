@@ -83,24 +83,15 @@ const PinConfig = () => {
     };
 
     useEffect(() => {
-        let unmounted = false;
         setLoading(true);
         ApiService.getIoConfig().then((result) => {
-            if (!unmounted) {
-                setLoading(false);
-                setIoConfig(result);
-                setError(false);
-            }
+            setLoading(false);
+            setIoConfig(result);
+            setError(false);
         }).catch(() => {
-            if (!unmounted) {
-                setLoading(false);
-                setError(true);
-            }
+            setLoading(false);
+            setError(true);
         });
-
-        return () => {
-            unmounted = true
-        }
     }, []);
 
 

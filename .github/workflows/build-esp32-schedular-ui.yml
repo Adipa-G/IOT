@@ -29,17 +29,49 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
-      - name: Build and Test
+      - name: Install dependencies
+        run: dotnet restore ./ESP32-Scheduler/mock-api/mock-api.sln
+      - name: Build 
+        run: dotnet build ./ESP32-Scheduler/mock-api/mock-api.sln
+      - name: NPM install
         run: |
           cd ESP32-Scheduler/web-ui
           npm install -g --prefer-offline react-scripts
           npm install --prefer-offline
+          npx playwright install chromium
+      - name: NPM build
+        run: |
+          cd ESP32-Scheduler/web-ui
           npm run build
+      - name: NPM test
+        run: |
+          cd ESP32-Scheduler/web-ui
           npm test
+      - name: Run application
+        run: nohup dotnet run --project ./ESP32-Scheduler/mock-api/mock-api.csproj --launch-profile E2E &
+      - name: Wait for the application to start
+        run: |
+          for i in {1..30}; do
+            if curl --fail http://localhost:5000/api/health/status; then
+              echo " - Web app is up!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Web app did not start in time."
+          exit 1
+      - name: Run e2e
+        run: |
+          cd ESP32-Scheduler/web-ui
+          npx playwright test
       - run: echo "🍏 This job's status is ${{ job.status }}."
       
       

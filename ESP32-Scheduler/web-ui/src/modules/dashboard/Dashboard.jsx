@@ -22,50 +22,35 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        let unmounted = false;
         setLoading(true);
         const request = Promise.all([
             ApiService.getHealth(),
             ApiService.getIoConfig()
         ]);
         request.then((result) => {
-            if (!unmounted) {
-                setLoading(false);
-                setHealth(result[0]);
-                setIoConfig(result[1]);
-                setError(false);
-            }
+            setLoading(false);
+            setHealth(result[0]);
+            setIoConfig(result[1]);
+            setError(false);
         }).catch(() => {
-            if (!unmounted) {
-                setLoading(false);
-                setError(true);
-            }
+            setLoading(false);
+            setError(true);
         });
 
         if (!timerRef.current) {
             timerRef.current = setInterval(() => {
                 ApiService.getHealth().then((result) => {
-                    if (!unmounted) {
-                        setHealth(result);
-                        setError(false);
-                    }
+                    setHealth(result);
+                    setError(false);
                 }).catch(() => {
-                    if (!unmounted) {
-                        setLoading(false);
-                        setError(true);
-                    }
+                    setLoading(false);
+                    setError(true);
                 });
             }, 10000);
         }
 
-        if (unmounted) {
-            if (!timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        }
-
-        return () => {
-            unmounted = true
+        if (!timerRef.current) {
+            clearTimeout(timerRef.current);
         }
     }, []);
 
