@@ -68,6 +68,8 @@ jobs:
           done
           echo "Web app did not start in time."
           exit 1
+      - name: Run react UI
+        run: npm start &
       - name: Run e2e
         run: |
           cd ESP32-Scheduler/web-ui
