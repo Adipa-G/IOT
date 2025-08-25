@@ -1,10 +1,6 @@
 import './PinConfig.css'
-
 import { useState, useEffect } from 'react';
-import { Col, Container, Spinner, Alert, Button, Form, Card } from 'react-bootstrap';
-
 import TimeRangeSelector from '../../components/TimeRangeSelector'
-
 import ApiService from '../../services/ApiService';
 
 const PinConfig = () => {
@@ -97,82 +93,97 @@ const PinConfig = () => {
 
 
     return (
-        <Container className="pin-config">
-            { loading ?
-                <Spinner animation="border" className="loader" data-testid="pin-config-loading-state">
-                    <span className="sr-only">Loading...</span>
-                </Spinner >
-                : null
-            }
-            { error ?
-                <Alert variant="danger" className="widget" data-testid="pin-config-error-state">
+        <div className="container pin-config">
+            {loading && (
+                <div className="spinner-border loader" role="status" data-testid="pin-config-loading-state">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            )}
+            
+            {error && (
+                <div className="alert alert-danger widget" role="alert" data-testid="pin-config-error-state">
                     Connectivity error. Please reload.
-                </Alert>
-                : null
-            }
-            { !loading ?
+                </div>
+            )}
+            
+            {!loading && (
                 <div>
-                    {ioConfig.schedules.map((schedule, index) => {
-                        return <Card key={index} className="pin-config-card" data-testid="pin-config-container">
-                            <Card.Body>
-                                <Form.Row>
-                                    <Form.Group as={Col} xs={4} sm={4} lg={3}>
-                                        <Form.Label>GPIO Pin</Form.Label>
-                                        <Form.Control type="number"
-                                            value={schedule.pin}
-                                            placeholder="pin number"
-                                            data-testid="pin-number-input"
-                                            onChange={(e) => onPinNumberChange(index, e.target.value)} />
-                                    </Form.Group>
-                                    <Form.Group as={Col} xs={8} sm={8} lg={3}>
-                                        <Form.Label>Title</Form.Label>
-                                        <Form.Control type="input"
-                                            value={schedule.title}
-                                            placeholder="pin title"
-                                            data-testid="pin-title-input"
-                                            onChange={(e) => onPinTitleChange(index, e.target.value)} />
-                                    </Form.Group>
-                                    <Form.Group as={Col} xs={12} sm={11} lg={3}>
-                                        <Form.Label>Schedule (On)</Form.Label>
-                                        <TimeRangeSelector
-                                            range={schedule.highDurationUtc}
-                                            onTimeChange={(highDurationUtc) => onTimeRangeChange(index, highDurationUtc)} />
-                                    </Form.Group>
-                                    <Form.Group as={Col} xs={12} sm={1} lg={3}>
-                                        <Button variant="outline-danger"
-                                            className="remove-button float-right"
+                    {ioConfig.schedules.map((schedule, index) => (
+                        <div className="card pin-config-card" key={index} data-testid="pin-config-container">
+                            <div className="card-body">
+                                <div className="row">
+                                    <div className="col-4 col-sm-4 col-lg-3">
+                                        <div className="mb-3">
+                                            <label className="form-label">GPIO Pin</label>
+                                            <input 
+                                                type="number"
+                                                className="form-control"
+                                                value={schedule.pin}
+                                                placeholder="pin number"
+                                                data-testid="pin-number-input"
+                                                onChange={(e) => onPinNumberChange(index, e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-8 col-sm-8 col-lg-3">
+                                        <div className="mb-3">
+                                            <label className="form-label">Title</label>
+                                            <input 
+                                                type="text"
+                                                className="form-control"
+                                                value={schedule.title}
+                                                placeholder="pin title"
+                                                data-testid="pin-title-input"
+                                                onChange={(e) => onPinTitleChange(index, e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-12 col-sm-11 col-lg-3">
+                                        <div className="mb-3">
+                                            <label className="form-label">Schedule (On)</label>
+                                            <TimeRangeSelector
+                                                range={schedule.highDurationUtc}
+                                                onTimeChange={(highDurationUtc) => onTimeRangeChange(index, highDurationUtc)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-12 col-sm-1 col-lg-3">
+                                        <button 
+                                            className="btn btn-outline-danger float-end remove-button"
                                             data-testid="remove-button"
-                                            onClick={() => onRemove(index)}>X
-                                        </Button>
-                                    </Form.Group>
-                                </Form.Row>
-                            </Card.Body>
-                        </Card>
-                    })}
-                    {validationError.length > 0 ?
-                        <Alert variant="danger" className="widget" data-testid="pin-config-validation-error">
+                                            onClick={() => onRemove(index)}>
+                                            X
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {validationError.length > 0 && (
+                        <div className="alert alert-danger widget" role="alert" data-testid="pin-config-validation-error">
                             {validationError.map((line, i) => (
                                 <div key={i}>{line}</div>
                             ))}
-                        </Alert>
-                        : null
-                    }
-                    <Button variant="outline-primary"
-                        className="add-button"
+                        </div>
+                    )}
+                    
+                    <button 
+                        className="btn btn-outline-primary add-button"
                         data-testid="add-button"
                         onClick={() => onAdd()}>
                         Add Schedule
-                    </Button>
-                    <Button variant="primary"
-                        className="save-button float-right"
+                    </button>
+                    
+                    <button 
+                        className="btn btn-primary float-end save-button"
                         data-testid="save-button"
                         onClick={() => onSave()}>
                         Save
-                    </Button>
+                    </button>
                 </div>
-                : null
-            }
-        </Container>
+            )}
+        </div>
     );
 }
 

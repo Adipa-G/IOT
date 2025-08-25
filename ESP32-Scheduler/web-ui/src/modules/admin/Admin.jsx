@@ -1,8 +1,5 @@
 import './Admin.css'
-
 import { useState, useEffect, useRef } from 'react';
-import { Col, Container, Row, Spinner, Alert, Button } from 'react-bootstrap';
-
 import ApiService from '../../services/ApiService';
 
 const Admin = () => {
@@ -34,34 +31,34 @@ const Admin = () => {
     };
 
     return (
-        <Container>
-            { loading ?
-                <Spinner animation="border" className="loader" data-testid="admin-loading-state">
-                    <span className="sr-only">Rebooting. Please wait....</span>
-                </Spinner >
-                : null
-            }
-            { error ?
-                <Alert variant="danger" className="widget" data-testid="admin-error-state">
+        <div className="container">
+            {loading && (
+                <div className="spinner-border loader" role="status" data-testid="admin-loading-state">
+                    <span className="visually-hidden">Rebooting. Please wait....</span>
+                </div>
+            )}
+            
+            {error && (
+                <div className="alert alert-danger widget" role="alert" data-testid="admin-error-state">
                     Connectivity error. Please reload.
-                </Alert>
-                : null
-            }
-            { !loading ?
+                </div>
+            )}
+            
+            {!loading && (
                 <div>
-                    <Row>
-                        <Col xs={6} md={4} lg={3} key={1} className="widget">
-                            <Button variant="primary"
+                    <div className="row">
+                        <div className="col-6 col-md-4 col-lg-3 widget">
+                            <button 
+                                className="btn btn-primary"
                                 data-testid="reboot-button"
                                 onClick={() => onReboot()}>
                                 Reboot
-                            </Button>
-                        </Col>
-                    </Row>
-                </div> :
-                null
-            }
-        </Container>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
 

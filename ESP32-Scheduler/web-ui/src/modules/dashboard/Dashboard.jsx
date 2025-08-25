@@ -1,10 +1,6 @@
 import './Dashboard.css'
-
 import { useState, useEffect, useRef } from 'react';
-import { Col, Container, Row, Spinner, Card, Alert } from 'react-bootstrap';
-
 import ScheduleWidget from './components/ScheduleWidget'
-
 import ApiService from '../../services/ApiService';
 
 const Dashboard = () => {
@@ -55,66 +51,73 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <Container>
-            {loading ?
-                <Spinner animation="border" className="loader" data-testid="dashboard-loading-state">
-                    <span className="sr-only">Loading...</span>
-                </Spinner >
-                : null
-            }
-            {error ?
-                <Alert variant="danger" className="widget" data-testid="dashboard-error-state">
+        <div className="container">
+            {loading && (
+                <div className="spinner-border loader" role="status" data-testid="dashboard-loading-state">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            )}
+            
+            {error && (
+                <div className="alert alert-danger widget" role="alert" data-testid="dashboard-error-state">
                     Connectivity error. Please reload.
-                </Alert>
-                : null
-            }
-            {!loading ?
+                </div>
+            )}
+            
+            {!loading && (
                 <div>
-                    <Row>
-                        <Col xs={6} md={4} lg={3} key={1} className="widget">
-                            <Card>
-                                <Card.Body>
-                                    <Card.Subtitle className="mb-2 text-muted">Memory</Card.Subtitle>
-                                    <Card.Text data-testid="dashboard-memory-widget">{(health.memory / 1000).toFixed(2)} kB</Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col xs={6} md={4} lg={3} key={2} className="widget">
-                            <Card>
-                                <Card.Body>
-                                    <Card.Subtitle className="mb-2 text-muted">Tempreature</Card.Subtitle>
-                                    <Card.Text data-testid="dashboard-tempreature-widget">{health.tempreature.toFixed(2)} C</Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col xs={6} md={4} lg={3} key={3} className="widget">
-                            <Card>
-                                <Card.Body>
-                                    <Card.Subtitle className="mb-2 text-muted">Voltage</Card.Subtitle>
-                                    <Card.Text data-testid="dashboard-voltage-widget">{health.voltage.toFixed(2)} V</Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col xs={6} md={4} lg={3} key={4} className="widget">
-                            <Card>
-                                <Card.Body>
-                                    <Card.Subtitle className="mb-2 text-muted">Time (Local)</Card.Subtitle>
-                                    <Card.Text data-testid="dashboard-time-widget">{getUtcTime()}</Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
-                    <Row>
-                        {ioConfig.schedules.map(function (schedule, i) {
-                            return <Col xs={12} md={6} className="widget" key={i}>
-                                <ScheduleWidget className="widget" schedule={schedule}></ScheduleWidget>
-                            </Col>
-                        })}
-                    </Row>
-                </div> :
-                null
-            }
-        </Container>
+                    <div className="row">
+                        <div className="col-6 col-md-4 col-lg-3 widget">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h6 className="card-subtitle mb-2 text-muted">Memory</h6>
+                                    <p className="card-text" data-testid="dashboard-memory-widget">
+                                        {(health.memory / 1000).toFixed(2)} kB
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-6 col-md-4 col-lg-3 widget">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h6 className="card-subtitle mb-2 text-muted">Tempreature</h6>
+                                    <p className="card-text" data-testid="dashboard-tempreature-widget">
+                                        {health.tempreature.toFixed(2)} C
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-6 col-md-4 col-lg-3 widget">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h6 className="card-subtitle mb-2 text-muted">Voltage</h6>
+                                    <p className="card-text" data-testid="dashboard-voltage-widget">
+                                        {health.voltage.toFixed(2)} V
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-6 col-md-4 col-lg-3 widget">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h6 className="card-subtitle mb-2 text-muted">Time (Local)</h6>
+                                    <p className="card-text" data-testid="dashboard-time-widget">
+                                        {getUtcTime()}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        {ioConfig.schedules.map((schedule, i) => (
+                            <div className="col-12 col-md-6 widget" key={i}>
+                                <ScheduleWidget className="widget" schedule={schedule} />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
 

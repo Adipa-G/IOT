@@ -1,8 +1,5 @@
 import './ScheduleWidget.css'
-
 import { useState, useEffect } from 'react';
-import { Spinner, Card, Alert, ButtonGroup, ToggleButton, Col, Row } from 'react-bootstrap';
-
 import ApiService from '../../../services/ApiService';
 import TimeUtils from '../../../services/TimeUtils';
 
@@ -43,57 +40,68 @@ const ScheduleWidget = (props) => {
 
     return (
         <div>
-            { loading ?
-                <Spinner animation="border" className="widget-loader">
-                    <span className="sr-only">Loading...</span>
-                </Spinner >
-                : null
-            }
-            { error ?
-                <Alert variant="danger" data-testid="schedule-widget-error-state">
+            {loading && (
+                <div className="spinner-border widget-loader" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            )}
+            {error ? (
+                <div className="alert alert-danger" data-testid="schedule-widget-error-state">
                     ¯\_(ツ)_/¯
-                </Alert>
-                : <Card data-testid={'schedule-widget-pin-' + props.schedule.pin}>
-                    <Card.Body>
-                        <Card.Subtitle className="mb-2 text-muted">{props.schedule.title} (pin {props.schedule.pin})</Card.Subtitle>
-                        <Row>
-                            <Col xs={8}>
-                                <Card.Text data-testid="schedule-widget-start-and-end-time">
+                </div>
+            ) : (
+                <div className="card" data-testid={'schedule-widget-pin-' + props.schedule.pin}>
+                    <div className="card-body">
+                        <h6 className="card-subtitle mb-2 text-muted">
+                            {props.schedule.title} (pin {props.schedule.pin})
+                        </h6>
+                        <div className="row">
+                            <div className="col-8">
+                                <p className="card-text" data-testid="schedule-widget-start-and-end-time">
                                     Schedule : <strong>{getHighDurationLocal()}</strong>
-                                </Card.Text>
-                            </Col>
-                            <Col xs={4}>
-                                <ButtonGroup toggle className="float-right">
-                                    <ToggleButton
-                                        key={1}
+                                </p>
+                            </div>
+                            <div className="col-4">
+                                <div className="btn-group float-end" role="group">
+                                    <input
                                         type="radio"
-                                        name="radio"
+                                        className="btn-check"
+                                        name={`btnradio-${props.schedule.pin}-1`}
+                                        id={`btnradio-${props.schedule.pin}-1`}
                                         value="0"
-                                        data-testid="schedule-widget-off-button"
-                                        variant={pinValue === "0" ? 'secondary' : 'success'}
                                         checked={pinValue === "0"}
-                                        onChange={(e) => setSwitch(e.currentTarget.value)}
+                                        onChange={(e) => setSwitch(e.target.value)}
+                                    />
+                                    <label 
+                                        className={`btn ${pinValue === "0" ? 'btn-secondary' : 'btn-success'}`}
+                                        htmlFor={`btnradio-${props.schedule.pin}-1`}
+                                        data-testid="schedule-widget-off-button"
                                     >
                                         Off
-                                    </ToggleButton>
-                                    <ToggleButton
-                                        key={2}
+                                    </label>
+
+                                    <input
                                         type="radio"
-                                        name="radio"
+                                        className="btn-check"
+                                        name={`btnradio-${props.schedule.pin}-2`}
+                                        id={`btnradio-${props.schedule.pin}-2`}
                                         value="1"
-                                        data-testid="schedule-widget-on-button"
-                                        variant={pinValue === "0" ? 'secondary' : 'success'}
                                         checked={pinValue === "1"}
-                                        onChange={(e) => setSwitch(e.currentTarget.value)}
+                                        onChange={(e) => setSwitch(e.target.value)}
+                                    />
+                                    <label 
+                                        className={`btn ${pinValue === "0" ? 'btn-secondary' : 'btn-success'}`}
+                                        htmlFor={`btnradio-${props.schedule.pin}-2`}
+                                        data-testid="schedule-widget-on-button"
                                     >
                                         On
-                                </ToggleButton>
-                                </ButtonGroup>
-                            </Col>
-                        </Row>
-                    </Card.Body>
-                </Card>
-            }
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

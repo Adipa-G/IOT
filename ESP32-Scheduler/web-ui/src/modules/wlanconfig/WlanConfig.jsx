@@ -1,8 +1,5 @@
 import './WlanConfig.css'
-
 import { useState } from 'react';
-import { Col, Container, Spinner, Alert, Button, Form, Card } from 'react-bootstrap';
-
 import ApiService from '../../services/ApiService';
 
 const WlanConfig = () => {
@@ -49,75 +46,85 @@ const WlanConfig = () => {
     };
 
     return (
-        <Container className="wlan-config">
-            { loading ?
-                <div>
-                    <Spinner animation="border" className="loader" data-testid="wlan-config-loading-state">
-                        <span className="sr-only">Loading...</span>
-                    </Spinner >
+        <div className="container wlan-config">
+            {loading && (
+                <div className="spinner-border loader" role="status" data-testid="wlan-config-loading-state">
+                    <span className="visually-hidden">Loading...</span>
                 </div>
-                : null
-            }
-            { error ?
-                <Alert variant="danger" data-testid="wlan-config-error-state">
+            )}
+            
+            {error && (
+                <div className="alert alert-danger" data-testid="wlan-config-error-state">
                     Connectivity error. Please reload.
-                </Alert>
-                : null
-            }
-            { wlanConfig.url ?
-                <Alert variant="success" data-testid="wlan-config-saved-state">
+                </div>
+            )}
+            
+            {wlanConfig.url && (
+                <div className="alert alert-success" data-testid="wlan-config-saved-state">
                     The device is now accessible by connecting to {wlanConfig.ssid} network and browsing {wlanConfig.url}.
-                </Alert>
-                : null
-            }
-            { !loading ?
+                </div>
+            )}
+            
+            {!loading && (
                 <div>
-                    <Card>
-                        <Card.Body>
-                            <Form.Row>
+                    <div className="card">
+                        <div className="card-body">
+                            <div className="row">
                                 <h3>WiFi Configuration</h3>
-                            </Form.Row>
-                            <Form.Row>
-                                <Form.Group as={Col} xs={12} md={6}>
-                                    <Form.Label>Network Name</Form.Label>
-                                    <Form.Control type="input"
-                                        value={wlanConfig.ssid}
-                                        data-testid="wlan-ssid"
-                                        onChange={(e) => onFieldChange('ssid', e.target.value)} />
-                                </Form.Group>
-                            </Form.Row>
-                            <Form.Row>
-                                <Form.Group as={Col} xs={12} md={6}>
-                                    <Form.Label>Network Password</Form.Label>
-                                    <Form.Control type="password"
-                                        value={wlanConfig.password}
-                                        data-testid="wlan-password"
-                                        onChange={(e) => onFieldChange('password', e.target.value)} />
-                                </Form.Group>
-                            </Form.Row>
-                        </Card.Body>
-                    </Card>
-                    <Alert variant="warning" className="alert-msg">
-                        Once this configuration is changed and saved, this device may not be assesible via the same URL. Please long press the left hand button of the device to find the new url.
-                    </Alert>
-                    {validationError ?
-                        <Alert variant="danger" className="alert-msg" data-testid="wlan-config-validation-error">
+                            </div>
+                            <div className="row">
+                                <div className="col-12 col-md-6">
+                                    <div className="mb-3">
+                                        <label className="form-label">Network Name</label>
+                                        <input 
+                                            type="text"
+                                            className="form-control"
+                                            value={wlanConfig.ssid}
+                                            data-testid="wlan-ssid"
+                                            onChange={(e) => onFieldChange('ssid', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12 col-md-6">
+                                    <div className="mb-3">
+                                        <label className="form-label">Network Password</label>
+                                        <input 
+                                            type="password"
+                                            className="form-control"
+                                            value={wlanConfig.password}
+                                            data-testid="wlan-password"
+                                            onChange={(e) => onFieldChange('password', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="alert alert-warning alert-msg">
+                        Once this configuration is changed and saved, this device may not be assesible via the same URL. 
+                        Please long press the left hand button of the device to find the new url.
+                    </div>
+                    
+                    {validationError.length > 0 && (
+                        <div className="alert alert-danger alert-msg" data-testid="wlan-config-validation-error">
                             {validationError.map((line, i) => (
                                 <div key={i}>{line}</div>
                             ))}
-                        </Alert>
-                        : null
-                    }
-                    <Button variant="primary"
-                        className="save-button float-right"
+                        </div>
+                    )}
+                    
+                    <button 
+                        className="btn btn-primary float-end save-button"
                         data-testid="save-button"
                         onClick={() => onSave()}>
                         Save
-                    </Button>
+                    </button>
                 </div>
-                : null
-            }
-        </Container>
+            )}
+        </div>
     );
 }
 
