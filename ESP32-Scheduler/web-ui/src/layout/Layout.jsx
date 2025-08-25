@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from "react-router";
+import { Route, Routes } from "react-router";
 
 import Menu from "./Menu";
 import RouteList from './../routes';
