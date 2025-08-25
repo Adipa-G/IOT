@@ -1,28 +1,19 @@
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router";
 
 import Menu from "./Menu";
-import Routes from './../routes';
+import RouteList from './../routes';
 
 const Layout = () => {
     return (
         <div>
             <Menu />
-            <Switch>
-                <Route
-                    exact
-                    path="/"
-                    render={() => {
-                        return (
-                            <Redirect to="/dashboard" />
-                        )
-                    }}
-                />
-                {Routes.map((route, i) => (
+            <Routes>
+                {RouteList.map((route, i) => (
                     <Route key={i}
                         path={route.path}
-                        component={() => route.component} />
+                        element={route.element} />
                 ))}
-            </Switch>
+            </Routes>
         </div>
     );
 }

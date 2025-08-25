@@ -4,27 +4,31 @@ import PinConfig from './modules/pinconfig/PinConfig';
 import PowerConfig from './modules/powerconfig/PowerConfig';
 import WlanConfig from './modules/wlanconfig/WlanConfig';
 
-const Routes = [
+const RouteList = [
     {
         path: "/admin",
-        component: <Admin />
+        element: <Admin />
     },
     {
         path: "/dashboard",
-        component: <Dashboard />
+        element: <Dashboard />
     },
     {
         path: "/pin-config",
-        component: <PinConfig />
+        element: <PinConfig />
     },
     {
         path: "/power-config",
-        component: <PowerConfig />
+        element: <PowerConfig />
     },
     {
         path: "/wlan-config",
-        component: <WlanConfig />
+        element: <WlanConfig />
+    },
+    {
+        path: "*",
+        element: <Dashboard />
     }
 ];
 
-export default Routes;
+export default RouteList;
