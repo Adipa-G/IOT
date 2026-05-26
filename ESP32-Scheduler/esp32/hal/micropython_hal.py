@@ -28,12 +28,6 @@ class MicropythonADC:
     def read(self):
         return self._adc.read()
 
-    def atten(self, attenuation):
-        self._adc.atten(attenuation)
-
-    def width(self, bits):
-        self._adc.width(bits)
-
 
 class MicropythonNetwork:
     def __init__(self, wlan):
@@ -73,4 +67,7 @@ class MicropythonPinFactory:
         return MicropythonPin(machine.Pin(pin_no, machine.Pin.OUT))
 
     def make_adc(self, pin_no):
-        return MicropythonADC(machine.ADC(machine.Pin(pin_no)))
+        adc = machine.ADC(machine.Pin(pin_no))
+        adc.atten(machine.ADC.ATTN_11DB)
+        adc.width(machine.ADC.WIDTH_12BIT)
+        return MicropythonADC(adc)

@@ -21,13 +21,22 @@ class LocatorInit:
         locator.kalman_filter = kalmanfilter.KalmanFilter()
         locator.log_service = logservice.LogService()
         locator.screen = screen.Screen()
-        locator.config_service = configservice.ConfigService()
+        locator.config_service = configservice.ConfigService(locator.log_service)
         locator.wlan_config = wlanconfigservice.WLANConfigService()
-        locator.io_config_service = ioconfigservice.IoConfigService()
-        locator.power_config_service = powerconfigservice.PowerConfigService()
-        locator.battery_voltage = batteryvoltage.BatteryVoltage()
+        locator.io_config_service = ioconfigservice.IoConfigService(
+            locator.config_service, locator.log_service
+        )
+        locator.power_config_service = powerconfigservice.PowerConfigService(
+            locator.config_service, locator.log_service
+        )
         locator.hal = micropython_hal.MicropythonPinFactory()
         locator.time_provider = micropython_hal.MicropythonTime()
+        locator.battery_voltage = batteryvoltage.BatteryVoltage(
+            locator.kalman_filter,
+            locator.power_config_service,
+            locator.hal,
+            locator.log_service,
+        )
         locator.io_service = ioservice.IoService(
             locator.io_config_service,
             locator.hal,

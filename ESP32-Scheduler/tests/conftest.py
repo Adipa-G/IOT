@@ -35,6 +35,10 @@ sys.modules["utime"] = time
 sys.modules["ubinascii"] = binascii
 sys.modules["ustruct"] = struct
 
+# MicroPython time extras not present on CPython
+if not hasattr(time, "sleep_ms"):
+    time.sleep_ms = lambda ms: None  # no-op in tests
+
 # Pure stubs for hardware/ESP32-only modules
 for _mod in ("machine", "network", "ntptime", "esp32", "ucryptolib", "usocket", "ussl"):
     sys.modules[_mod] = MagicMock()

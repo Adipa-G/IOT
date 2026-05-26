@@ -31,17 +31,9 @@ class MockADC:
 
     def __init__(self, raw_value=0):
         self._raw_value = raw_value
-        self.atten_calls = []
-        self.width_calls = []
 
     def read(self):
         return self._raw_value
-
-    def atten(self, attenuation):
-        self.atten_calls.append(attenuation)
-
-    def width(self, bits):
-        self.width_calls.append(bits)
 
 
 class MockTime:
@@ -60,8 +52,9 @@ class MockTime:
 class MockPinFactory:
     """Creates and tracks MockPin instances keyed by pin number."""
 
-    def __init__(self):
+    def __init__(self, adc_raw_value=0):
         self._pins: dict = {}
+        self._adc_raw_value = adc_raw_value
 
     def make_input_pin(self, pin_no):
         pin = MockPin()
@@ -74,10 +67,14 @@ class MockPinFactory:
         return pin
 
     def make_adc(self, pin_no):
-        adc = MockADC()
+        adc = MockADC(raw_value=self._adc_raw_value)
         self._pins[(pin_no, "adc")] = adc
         return adc
 
     def get_output_pin(self, pin_no):
         """Retrieve the last output MockPin created for a given pin number."""
         return self._pins.get((pin_no, "out"))
+
+    def get_adc(self, pin_no):
+        """Retrieve the MockADC created for a given pin number."""
+        return self._pins.get((pin_no, "adc"))

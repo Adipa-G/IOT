@@ -1,11 +1,9 @@
 import ujson
 
-import ioc.locator as locator
-
 
 class ConfigService:
-    def __init__(self):
-        self._log_service = locator.log_service
+    def __init__(self, log_service):
+        self._log_service = log_service
 
     def read_config(self, fileName):
         cfg = dict()
