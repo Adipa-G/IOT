@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
 from power.powermanager import PowerManager
-from tests.hal.mock_hal import MockSystem, MockNetwork, MockTime
+from hal.mock_hal import MockSystem, MockNetwork, MockTime
 
 
 # ---------------------------------------------------------------------------

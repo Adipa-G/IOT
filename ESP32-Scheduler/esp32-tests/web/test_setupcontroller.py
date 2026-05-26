@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from types import SimpleNamespace
 
 from web.controllers.setupcontroller import SetupController
-from tests.hal.mock_hal import MockSystem
+from hal.mock_hal import MockSystem
 
 
 def _make_controller(config_mode=False, wlan_test_result=None):

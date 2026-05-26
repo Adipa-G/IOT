@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from web.controllers.pincontroller import PinController
-from tests.hal.mock_hal import MockPinFactory
+from hal.mock_hal import MockPinFactory
 
 
 def _request(payload=None):

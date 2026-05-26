@@ -1,11 +1,7 @@
 import uasyncio
 import usocket
 from micropython import const
-
-try:
-    import dns.dnsquery as dnsquery
-except ImportError:
-    import esp_dns.dnsquery as dnsquery
+import dns.dnsquery as dnsquery
 
 
 class Server:

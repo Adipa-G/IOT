@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 from filters.kalmanfilter import KalmanFilter
 from power.batteryvoltage import BatteryVoltage
-from tests.hal.mock_hal import MockPinFactory
+from hal.mock_hal import MockPinFactory
 
 DEFAULT_VOLTAGE_PIN = 34
 ADC_EN_PIN = 14

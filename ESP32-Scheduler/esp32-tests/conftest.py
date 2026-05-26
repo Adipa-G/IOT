@@ -20,9 +20,23 @@ def _register_source_alias(alias, package_dir):
     sys.modules[alias] = pkg
 
 
+def _register_tests_alias(alias, package_dir):
+    pkg = types.ModuleType(alias)
+    pkg.__path__ = [os.path.join(os.path.dirname(__file__), package_dir)]
+    sys.modules[alias] = pkg
+
+
 # Avoid import collisions with test package names (esp32-tests/config, esp32-tests/dns)
 _register_source_alias("esp_config", "config")
 _register_source_alias("esp_dns", "dns")
+
+# Resolve source package imports deterministically during CPython test collection.
+for _pkg in ("config", "dns", "filters", "log", "power", "web", "wlan", "schedule", "ioc"):
+    if _pkg not in sys.modules:
+        _register_source_alias(_pkg, _pkg)
+
+if "hal" not in sys.modules:
+    _register_tests_alias("hal", "hal")
 
 # ---------------------------------------------------------------------------
 # 2. MicroPython module aliases — must happen before any ESP32 imports

@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 
-from tests.hal.mock_hal import MockPinFactory, MockTime
+from hal.mock_hal import MockPinFactory, MockTime
 from schedule.ioservice import IoService
 
 

@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from types import SimpleNamespace
 
 from wlan.wlansetup import WLANSetup, WIFI_RECONNECT_CYCLES
-from tests.hal.mock_hal import MockNetwork, MockSystem
+from hal.mock_hal import MockNetwork, MockSystem
 
 
 # ---------------------------------------------------------------------------
