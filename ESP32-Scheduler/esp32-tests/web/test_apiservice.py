@@ -36,7 +36,7 @@ def test_returns_404_for_unknown_controller():
     """Unknown controller name returns 404."""
     service, *_ = _make_service()
     result = service.handle(_request("GET", "/api/unknown/action"))
-    assert result["status"] == "404 NotFound"
+    assert result["status"] == "404 Not Found"
     assert result["result"] is None
 
 
@@ -44,4 +44,4 @@ def test_returns_404_for_unknown_method():
     """Known controller but missing method returns 404."""
     service, *_ = _make_service()
     result = service.handle(_request("GET", "/api/health/nonexistent"))
-    assert result["status"] == "404 NotFound"
+    assert result["status"] == "404 Not Found"

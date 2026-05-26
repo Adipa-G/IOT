@@ -8,6 +8,18 @@ import ioc.locator as locator
 class Server:
     BUF_SIZE = const(4096)
     PORT = const(80)
+    PROBE_PATHS = (
+        "/generate_204",
+        "/gen_204",
+        "/hotspot-detect.html",
+        "/ncsi.txt",
+        "/connecttest.txt",
+        "/redirect",
+        "/canonical.html",
+        "/success.txt",
+        "/success.html",
+        "/fwlink",
+    )
 
     def __init__(self, home):
         self.home = home
@@ -37,25 +49,26 @@ class Server:
             request_data = await self.__get_request_data(reader)
             if request_data.method == "options":
                 await writer.awrite(
-                    "HTTP/1.0 204\nContent-Type: application/json\n"
-                    "Access-Control-Allow-Origin: *\n"
-                    "Access-Control-Allow-Methods: POST, GET, OPTIONS\n"
-                    "Access-Control-Allow-Headers: Authorization, Content-Type\n"
-                    "Access-Control-Max-Age: 60\n\n"
+                    "HTTP/1.0 204 No Content\r\n"
+                    "Content-Type: application/json\r\n"
+                    "Access-Control-Allow-Origin: *\r\n"
+                    "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
+                    "Access-Control-Allow-Headers: Authorization, Content-Type\r\n"
+                    "Access-Control-Max-Age: 60\r\n\r\n"
                 )
             elif "/api/" in request_data.path:
                 try:
                     result = self.api_service.handle(request_data)
                     await writer.awrite(
-                        "HTTP/1.0 " + result["status"] + "\n"
-                        "Content-Type: application/json\nAccess-Control-Allow-Origin: *\n\n"
+                        "HTTP/1.0 " + result["status"] + "\r\n"
+                        "Content-Type: application/json\r\n"
+                        "Access-Control-Allow-Origin: *\r\n\r\n"
                     )
                     if result["result"] != None:
                         await writer.awrite(ujson.dumps(result["result"]))
                 except Exception as api_error:
                     self.log_service.log("api error " + str(api_error))
-                    await writer.awrite("HTTP/1.0 500 InternalServerError\n")
-                    await writer.awrite("\n")
+                    await writer.awrite("HTTP/1.0 500 Internal Server Error\r\n\r\n")
             else:
                 path = "/index.html" if request_data.path == "/" else request_data.path
                 try:
@@ -64,16 +77,16 @@ class Server:
                     f = open(self.home + path, "rb")
                     content = f.read(self.BUF_SIZE)
 
-                    headers = "HTTP/1.0 200 OK\n"
+                    headers = "HTTP/1.0 200 OK\r\n"
                     if path.endswith(".gz"):
-                        headers += "Content-Encoding: gzip\n"
+                        headers += "Content-Encoding: gzip\r\n"
                     if path.find(".css") != -1:
-                        headers += "Content-Type: text/css\n"
+                        headers += "Content-Type: text/css\r\n"
                     elif path.find(".js") != -1:
-                        headers += "Content-Type: text/javascript\n"
+                        headers += "Content-Type: text/javascript\r\n"
                     elif path.find(".html") != -1:
-                        headers += "Content-Type: text/html\n"
-                    headers += "\n"
+                        headers += "Content-Type: text/html\r\n"
+                    headers += "\r\n"
                     await writer.awrite(headers)
 
                     while True:
@@ -85,11 +98,54 @@ class Server:
 
                 except OSError as io_error:
                     self.log_service.log("io error " + path + " " + str(io_error))
-                    await writer.awrite("HTTP/1.0 404 NotFound\n")
-                    await writer.awrite("\n")
+                    if self.__should_redirect_to_portal(path):
+                        await self.__write_portal_page(writer)
+                    else:
+                        await writer.awrite(
+                            "HTTP/1.0 404 Not Found\r\n"
+                            "Content-Type: text/html\r\n\r\n"
+                            "<html><body>Not Found</body></html>"
+                        )
             await writer.wait_closed()
         except Exception as catch_all:
             self.log_service.log("failed to handle request " + type(catch_all).__name__ + ": " + str(catch_all))
+
+    def __should_redirect_to_portal(self, path):
+        if path in self.PROBE_PATHS:
+            return True
+        if path.endswith(".css") or path.endswith(".js") or path.endswith(".png"):
+            return False
+        return path.find(".") == -1 or path.endswith(".html") or path.endswith(".txt")
+
+    async def __write_redirect(self, writer):
+        await writer.awrite(
+            "HTTP/1.0 302 Found\r\n"
+            "Location: /index.html\r\n"
+            "Cache-Control: no-cache\r\n"
+            "Content-Type: text/html\r\n\r\n"
+            "<html><body>Redirecting</body></html>"
+        )
+
+    async def __write_portal_page(self, writer):
+        import gc
+
+        gc.collect()
+        await writer.awrite("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n")
+        f = None
+        try:
+            f = open(self.home + "/index.html", "rb")
+            content = f.read(self.BUF_SIZE)
+
+            while True:
+                await writer.awrite(content)
+                if len(content) < self.BUF_SIZE:
+                    break
+                content = f.read(self.BUF_SIZE)
+        except OSError:
+            await writer.awrite("<html><body>Captive portal</body></html>")
+        finally:
+            if f != None:
+                f.close()
 
     async def __get_request_data(self, reader):
         requst = list()

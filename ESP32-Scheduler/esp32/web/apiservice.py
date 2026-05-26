@@ -19,4 +19,4 @@ class APIService:
                 method = getattr(controller, method_name)
                 result = method(request, *args)
                 return {"status": "200 OK", "result": result}
-        return {"status": "404 NotFound", "result": None}
+        return {"status": "404 Not Found", "result": None}
