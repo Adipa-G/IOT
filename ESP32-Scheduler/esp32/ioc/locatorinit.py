@@ -4,7 +4,8 @@ import config.powerconfigservice as powerconfigservice
 import config.wlanconfigservice as wlanconfigservice
 import display.screen as screen
 import dns.server as dns_server
-import io.ioservice as ioservice
+import hal.micropython_hal as micropython_hal
+import schedule.ioservice as ioservice
 import ioc.locator as locator
 import filters.kalmanfilter as kalmanfilter
 import log.logservice as logservice
@@ -25,7 +26,14 @@ class LocatorInit:
         locator.io_config_service = ioconfigservice.IoConfigService()
         locator.power_config_service = powerconfigservice.PowerConfigService()
         locator.battery_voltage = batteryvoltage.BatteryVoltage()
-        locator.io_service = ioservice.IoService()
+        locator.hal = micropython_hal.MicropythonPinFactory()
+        locator.time_provider = micropython_hal.MicropythonTime()
+        locator.io_service = ioservice.IoService(
+            locator.io_config_service,
+            locator.hal,
+            locator.time_provider,
+            locator.log_service,
+        )
         locator.power_manager = powermanager.PowerManager()
         locator.wlan_setup = wlansetup.WLANSetup()
         locator.dns_server = dns_server.Server()
