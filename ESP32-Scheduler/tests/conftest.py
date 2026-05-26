@@ -39,6 +39,11 @@ sys.modules["ustruct"] = struct
 if not hasattr(time, "sleep_ms"):
     time.sleep_ms = lambda ms: None  # no-op in tests
 
+# gc.mem_free() is MicroPython-only; shim it for CPython
+import gc
+if not hasattr(gc, "mem_free"):
+    gc.mem_free = lambda: 0
+
 # Pure stubs for hardware/ESP32-only modules
 for _mod in ("machine", "network", "ntptime", "esp32", "ucryptolib", "usocket", "ussl"):
     sys.modules[_mod] = MagicMock()

@@ -3,7 +3,6 @@ import usocket
 from micropython import const
 
 import dns.dnsquery as dnsquery
-import ioc.locator as locator
 
 
 class Server:
@@ -11,9 +10,9 @@ class Server:
     MAX_QUERY_LENGTH = const(256)
     DNS_QUERY_START = const(12)
 
-    def __init__(self):
-        self._log_service = locator.log_service
-        self._wlan_setup = locator.wlan_setup
+    def __init__(self, wlan_setup, log_service):
+        self._log_service = log_service
+        self._wlan_setup = wlan_setup
         self._running = False
         self._sock = None
         self._ipAddress = None

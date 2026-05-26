@@ -1,25 +1,25 @@
-import network
 import random
-import machine
 import time
 import uasyncio
-from ntptime import settime
 from micropython import const
-
-import display.st7789driver as displayDriver
-import ioc.locator as locator
 
 FONT_LEFT = const(5)
 WIFI_RECONNECT_CYCLES = const(10)
+STAT_CONNECTING = const(1)
+_WHITE = const(0xFFFF)
 
 
 class WLANSetup:
-    def __init__(self):
+    def __init__(self, wlan_config, screen, wlan_sta, wlan_ap, system, ntp_sync, log_service):
         self.configMode = False
         self._wifi_cycle = 0
-        self._wlan_config = locator.wlan_config
-        self._screen = locator.screen
-        self._log_service = locator.log_service
+        self._wlan_config = wlan_config
+        self._screen = screen
+        self._wlan_sta = wlan_sta
+        self._wlan_ap = wlan_ap
+        self._system = system
+        self._ntp_sync = ntp_sync
+        self._log_service = log_service
 
     def start_config_mode(self, force):
         if self.configMode == True:
@@ -30,80 +30,73 @@ class WLANSetup:
             wifiName = "net_" + str(random.getrandbits(20))
             wifiPass = str(random.getrandbits(25))
 
-            ap = network.WLAN(network.AP_IF)
-            if ap.active() == True:
+            if self._wlan_ap.active() == True:
                 return
 
-            ap.active(True)
-
-            ap.config(
+            self._wlan_ap.active(True)
+            self._wlan_ap.config(
                 essid=wifiName, password=wifiPass, authmode=4
-            )  # authmode=1 == no pass
+            )
             result = type("", (), {})()
             result.ssid = wifiName
             result.password = wifiPass
-            result.ipAddress = ap.ifconfig()[0]
+            result.ipAddress = self._wlan_ap.ifconfig()[0]
             self.__print_wifi_setup_details(result)
             self.configMode = True
 
     def get_config_mode_details(self):
         result = type("", (), {})()
-        ap = network.WLAN(network.AP_IF)
 
-        if self.configMode == True and ap.active() == True:
-            result.ipAddress = ap.ifconfig()[0]
+        if self.configMode == True and self._wlan_ap.active() == True:
+            result.ipAddress = self._wlan_ap.ifconfig()[0]
         else:
             result.ipAddress = None
         return result
 
     def end_config_mode(self):
-        ap = network.WLAN(network.AP_IF)
-        ap.active(False)
+        self._wlan_ap.active(False)
         self.configMode = False
 
     def connect_to_configured_wlan(self):
-        sta_if = network.WLAN(network.STA_IF)
-        ap_if = network.WLAN(network.AP_IF)
         configValue = self._wlan_config.read_config()
 
-        ap_if.active(False)
+        self._wlan_ap.active(False)
 
         if configValue != None:
-            sta_if.active(True)
-            sta_if.connect(configValue.ssid, configValue.password)
+            self._wlan_sta.active(True)
+            self._wlan_sta.connect(configValue.ssid, configValue.password)
             connected = False
             for count in range(100):
-                status = sta_if.status()
-                if status == network.STAT_CONNECTING:
+                status = self._wlan_sta.status()
+                if status == STAT_CONNECTING:
                     time.sleep_ms(100)
                 else:
-                    connected = sta_if.isconnected()
+                    connected = self._wlan_sta.isconnected()
                     break
 
             if connected == True:
                 result = type("", (), {})()
                 result.ssid = configValue.ssid
-                result.ipAddress = sta_if.ifconfig()[0]
+                result.ipAddress = self._wlan_sta.ifconfig()[0]
 
                 try:
-                    settime()
+                    self._ntp_sync()
                     self._log_service.log(
                         "connected to the network and configured time."
                     )
                 except:
-                    machine.reset()
+                    self._system.reset()
                 self.__print_wifi_connection_details(result)
 
                 return connected
             else:
-                sta_if.active(False)
+                self._wlan_sta.active(False)
                 return False
 
         return False
 
     def test_wlan_config(self):
-        sta_if = network.WLAN(network.STA_IF)
-        sta_if.active(False)
+        self._wlan_sta.active(False)
 
         configValue = self._wlan_config.read_config()
 
@@ -111,21 +104,21 @@ class WLANSetup:
         result.connected = False
 
         if configValue != None:
-            sta_if.active(True)
-            sta_if.connect(configValue.ssid, configValue.password)
+            self._wlan_sta.active(True)
+            self._wlan_sta.connect(configValue.ssid, configValue.password)
             connected = False
             for count in range(100):
-                status = sta_if.status()
-                if status == network.STAT_CONNECTING:
+                status = self._wlan_sta.status()
+                if status == STAT_CONNECTING:
                     time.sleep_ms(100)
                 else:
-                    connected = sta_if.isconnected()
+                    connected = self._wlan_sta.isconnected()
                     break
 
             result = type("", (), {})()
             result.connected = connected
             if connected == True:
-                result.ipAddress = sta_if.ifconfig()[0]
+                result.ipAddress = self._wlan_sta.ifconfig()[0]
 
         return result
 
@@ -135,8 +128,7 @@ class WLANSetup:
 
         connected = False
         if self._wifi_cycle == WIFI_RECONNECT_CYCLES:
-            sta_if = network.WLAN(network.STA_IF)
-            if sta_if.isconnected() == False:
+            if self._wlan_sta.isconnected() == False:
                 self._log_service.log("trying wifi re-connect")
                 connected = self.connect_to_configured_wlan()
             self._wifi_cycle = 0
@@ -147,34 +139,34 @@ class WLANSetup:
 
     def __print_wifi_setup_details(self, config):
         self._screen.reset_screen()
-        self._screen.draw_text("wifi config mode", FONT_LEFT, 30, displayDriver.WHITE)
-        self._screen.draw_text("________________", FONT_LEFT, 40, displayDriver.WHITE)
-        self._screen.draw_text("connect to the", FONT_LEFT, 60, displayDriver.WHITE)
-        self._screen.draw_text("following network", FONT_LEFT, 70, displayDriver.WHITE)
+        self._screen.draw_text("wifi config mode", FONT_LEFT, 30, _WHITE)
+        self._screen.draw_text("________________", FONT_LEFT, 40, _WHITE)
+        self._screen.draw_text("connect to the", FONT_LEFT, 60, _WHITE)
+        self._screen.draw_text("following network", FONT_LEFT, 70, _WHITE)
         self._screen.draw_text(
-            "ssid : " + config.ssid, FONT_LEFT, 90, displayDriver.WHITE
+            "ssid : " + config.ssid, FONT_LEFT, 90, _WHITE
         )
         self._screen.draw_text(
-            "password : " + config.password, FONT_LEFT, 100, displayDriver.WHITE
+            "password : " + config.password, FONT_LEFT, 100, _WHITE
         )
-        self._screen.draw_text("open follwing url", FONT_LEFT, 120, displayDriver.WHITE)
+        self._screen.draw_text("open follwing url", FONT_LEFT, 120, _WHITE)
         self._screen.draw_text(
-            "http://" + config.ipAddress, FONT_LEFT, 130, displayDriver.WHITE
+            "http://" + config.ipAddress, FONT_LEFT, 130, _WHITE
         )
         self._screen.draw_text(
-            "press left button to", FONT_LEFT, 150, displayDriver.WHITE
+            "press left button to", FONT_LEFT, 150, _WHITE
         )
-        self._screen.draw_text("exit config mode", FONT_LEFT, 160, displayDriver.WHITE)
+        self._screen.draw_text("exit config mode", FONT_LEFT, 160, _WHITE)
 
     def __print_wifi_connection_details(self, config):
         self._screen.reset_screen()
-        self._screen.draw_text("wifi connected", FONT_LEFT, 30, displayDriver.WHITE)
-        self._screen.draw_text("________________", FONT_LEFT, 40, displayDriver.WHITE)
-        self._screen.draw_text("connected to", FONT_LEFT, 60, displayDriver.WHITE)
+        self._screen.draw_text("wifi connected", FONT_LEFT, 30, _WHITE)
+        self._screen.draw_text("________________", FONT_LEFT, 40, _WHITE)
+        self._screen.draw_text("connected to", FONT_LEFT, 60, _WHITE)
         self._screen.draw_text(
-            "ssid : " + config.ssid, FONT_LEFT, 90, displayDriver.WHITE
+            "ssid : " + config.ssid, FONT_LEFT, 90, _WHITE
         )
-        self._screen.draw_text("open follwing url", FONT_LEFT, 120, displayDriver.WHITE)
+        self._screen.draw_text("open follwing url", FONT_LEFT, 120, _WHITE)
         self._screen.draw_text(
-            "http://" + config.ipAddress, FONT_LEFT, 130, displayDriver.WHITE
+            "http://" + config.ipAddress, FONT_LEFT, 130, _WHITE
         )

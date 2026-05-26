@@ -4,12 +4,8 @@ import web.controllers.pincontroller as pin
 
 
 class APIService:
-    def __init__(self):
-        self.controllers = {
-            "health": health.HealthController(),
-            "setup": setup.SetupController(),
-            "pin": pin.PinController(),
-        }
+    def __init__(self, controllers):
+        self.controllers = controllers
 
     def handle(self, request):
         tokens = request.path.strip("/").split("/")

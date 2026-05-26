@@ -52,6 +52,12 @@ class MicropythonNetwork:
     def disconnect(self):
         self._wlan.disconnect()
 
+    def status(self):
+        return self._wlan.status()
+
+    def config(self, *args, **kwargs):
+        return self._wlan.config(*args, **kwargs)
+
 
 class MicropythonTime:
     def localtime(self):
@@ -67,6 +73,9 @@ class MicropythonSystem:
 
     def deep_sleep(self, duration_ms):
         machine.deepsleep(duration_ms)
+
+    def reset(self):
+        machine.reset()
 
 
 def make_sta_wlan():

@@ -1,13 +1,10 @@
-import machine
-import ioc.locator as locator
-
-
 class SetupController:
-    def __init__(self):
-        self._io_config_service = locator.io_config_service
-        self._power_config_service = locator.power_config_service
-        self._wlan_config = locator.wlan_config
-        self._wlan_setup = locator.wlan_setup
+    def __init__(self, io_config_service, power_config_service, wlan_config, wlan_setup, system):
+        self._io_config_service = io_config_service
+        self._power_config_service = power_config_service
+        self._wlan_config = wlan_config
+        self._wlan_setup = wlan_setup
+        self._system = system
 
     def get_io_config(self, request):
         result = self._io_config_service.read_config()
@@ -45,5 +42,5 @@ class SetupController:
         return {"result": "Failed"}
 
     def post_restart(self, request):
-        machine.reset()
+        self._system.reset()
         return {"result": "Success"}

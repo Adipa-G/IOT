@@ -1,18 +1,13 @@
-import machine
-import ioc.locator as locator
-import ujson
-
-
 class PinController:
-    def __init__(self):
-        pass
+    def __init__(self, pin_factory):
+        self._pin_factory = pin_factory
 
     def get_pin_value(self, request, pin):
-        pin = machine.Pin(int(pin), machine.Pin.OUT)
-        return {"value": str(pin.value())}
+        p = self._pin_factory.make_output_pin(int(pin))
+        return {"value": str(p.value())}
 
     def post_pin_value(self, request, pin):
-        pin = machine.Pin(int(pin), machine.Pin.OUT)
+        p = self._pin_factory.make_output_pin(int(pin))
         value = request.payload["value"]
-        pin.value(int(value))
+        p.value(int(value))
         return {"result": "Success"}

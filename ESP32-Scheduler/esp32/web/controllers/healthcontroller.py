@@ -2,14 +2,12 @@ import utime
 import esp32
 import gc
 
-import ioc.locator as locator
-
 
 class HealthController:
-    def __init__(self):
-        self._battery_voltage = locator.battery_voltage
-        self._log_service = locator.log_service
-        self._wlan_setup = locator.wlan_setup
+    def __init__(self, battery_voltage, wlan_setup, log_service):
+        self._battery_voltage = battery_voltage
+        self._log_service = log_service
+        self._wlan_setup = wlan_setup
 
     def get_status(self, request):
         voltage = self._battery_voltage.get_voltage()

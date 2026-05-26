@@ -87,6 +87,7 @@ class MockSystem:
         self._cpu_freq = cpu_freq
         self.set_freq_calls = []
         self.deep_sleep_calls = []
+        self.reset_calls = []
 
     def get_cpu_freq(self):
         return self._cpu_freq
@@ -98,14 +99,20 @@ class MockSystem:
     def deep_sleep(self, duration_ms):
         self.deep_sleep_calls.append(duration_ms)
 
+    def reset(self):
+        self.reset_calls.append(True)
+
 
 class MockNetwork:
-    """Simulates network.WLAN — tracks active() calls."""
+    """Simulates network.WLAN — tracks active(), connect(), status(), and config() calls."""
 
-    def __init__(self, connected=False):
-        self._active = True
+    def __init__(self, connected=False, active=False):
+        self._active = active
         self._connected = connected
+        self.status_value = 3  # default: not STAT_CONNECTING (1), loop exits immediately
         self.active_calls = []
+        self.connect_calls = []
+        self.config_calls = []
 
     def active(self, v=None):
         self.active_calls.append(v)
@@ -114,13 +121,22 @@ class MockNetwork:
         return self._active
 
     def connect(self, ssid, password):
-        pass
+        self.connect_calls.append((ssid, password))
 
     def isconnected(self):
         return self._connected
 
+    def status(self):
+        return self.status_value
+
     def ifconfig(self):
-        return ("192.168.1.1", "255.255.255.0", "192.168.1.1", "8.8.8.8")
+        return ("192.168.4.1", "255.255.255.0", "192.168.4.1", "8.8.8.8")
+
+    def config(self, *args, **kwargs):
+        self.config_calls.append((args, kwargs))
+        if args and args[0] == "mac":
+            return b'\xaa\xbb\xcc\xdd\xee\xff'
+        return None
 
     def scan(self):
         return []

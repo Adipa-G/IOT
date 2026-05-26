@@ -12,6 +12,9 @@ import log.logservice as logservice
 import power.batteryvoltage as batteryvoltage
 import power.powermanager as powermanager
 import web.apiservice as apiservice
+import web.controllers.healthcontroller as healthcontroller
+import web.controllers.setupcontroller as setupcontroller
+import web.controllers.pincontroller as pincontroller
 import web.server as web_server
 import wlan.wlansetup as wlansetup
 
@@ -56,8 +59,30 @@ class LocatorInit:
             locator.wlan_ap,
             locator.log_service,
         )
-        locator.wlan_setup = wlansetup.WLANSetup()
-        locator.dns_server = dns_server.Server()
-        locator.api_service = apiservice.APIService()
+        from ntptime import settime
+        locator.wlan_setup = wlansetup.WLANSetup(
+            locator.wlan_config,
+            locator.screen,
+            locator.wlan_sta,
+            locator.wlan_ap,
+            locator.system,
+            settime,
+            locator.log_service,
+        )
+        locator.dns_server = dns_server.Server(locator.wlan_setup, locator.log_service)
+        health_ctrl = healthcontroller.HealthController(
+            locator.battery_voltage, locator.wlan_setup, locator.log_service
+        )
+        setup_ctrl = setupcontroller.SetupController(
+            locator.io_config_service,
+            locator.power_config_service,
+            locator.wlan_config,
+            locator.wlan_setup,
+            locator.system,
+        )
+        pin_ctrl = pincontroller.PinController(locator.hal)
+        locator.api_service = apiservice.APIService(
+            {"health": health_ctrl, "setup": setup_ctrl, "pin": pin_ctrl}
+        )
         locator.web_server = web_server.Server("pub")
         locator.power_manager.set_server_refs(locator.web_server, locator.dns_server)
