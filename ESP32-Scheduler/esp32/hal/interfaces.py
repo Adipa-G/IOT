@@ -1,4 +1,10 @@
-from typing import Protocol, runtime_checkable, Optional, Tuple
+try:
+    from typing import Protocol, runtime_checkable, Optional, Tuple
+except ImportError:
+    Protocol = object
+    runtime_checkable = lambda cls: cls
+    Optional = None
+    Tuple = None
 
 
 @runtime_checkable

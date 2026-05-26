@@ -6,6 +6,7 @@ from micropython import const
 FONT_LEFT = const(5)
 WIFI_RECONNECT_CYCLES = const(10)
 STAT_CONNECTING = const(1)
+STAT_CONNECTING_ALT = const(1001)
 _WHITE = const(0xFFFF)
 
 
@@ -28,7 +29,7 @@ class WLANSetup:
         configValue = self._wlan_config.read_config()
         if force == True or configValue == None:
             wifiName = "net_" + str(random.getrandbits(20))
-            wifiPass = str(random.getrandbits(25))
+            wifiPass = str(random.getrandbits(26) % 100000000 + 100000000)
 
             if self._wlan_ap.active() == True:
                 return
@@ -59,19 +60,31 @@ class WLANSetup:
 
     def connect_to_configured_wlan(self):
         configValue = self._wlan_config.read_config()
-
+        self._log_service.log("connect_to_configured_wlan: ssid=" + str(getattr(configValue, 'ssid', None)))
         self._wlan_ap.active(False)
 
         if configValue != None:
             self._wlan_sta.active(True)
+            try:
+                self._wlan_sta.disconnect()
+            except:
+                pass
+            self._log_service.log("Connecting to SSID: {}".format(configValue.ssid))
             self._wlan_sta.connect(configValue.ssid, configValue.password)
             connected = False
             for count in range(100):
                 status = self._wlan_sta.status()
-                if status == STAT_CONNECTING:
+                self._log_service.log("status[{}]: {}".format(count, status))
+                if self._wlan_sta.isconnected() == True:
+                    connected = True
+                    self._log_service.log("isconnected: {}".format(connected))
+                    break
+
+                if status == STAT_CONNECTING or status == STAT_CONNECTING_ALT:
                     time.sleep_ms(100)
                 else:
-                    connected = self._wlan_sta.isconnected()
+                    connected = False
+                    self._log_service.log("isconnected: {}".format(connected))
                     break
 
             if connected == True:
@@ -84,35 +97,49 @@ class WLANSetup:
                     self._log_service.log(
                         "connected to the network and configured time."
                     )
-                except:
+                except Exception as e:
+                    self._log_service.log("ntp_sync failed: " + str(e))
                     self._system.reset()
                 self.__print_wifi_connection_details(result)
 
                 return connected
             else:
+                self._log_service.log("Failed to connect after status loop.")
                 self._wlan_sta.active(False)
                 return False
 
+        self._log_service.log("No configValue found.")
         return False
 
     def test_wlan_config(self):
         self._wlan_sta.active(False)
-
         configValue = self._wlan_config.read_config()
-
+        self._log_service.log("test_wlan_config: ssid=" + str(getattr(configValue, 'ssid', None)))
         result = type("", (), {})()
         result.connected = False
 
         if configValue != None:
             self._wlan_sta.active(True)
+            try:
+                self._wlan_sta.disconnect()
+            except:
+                pass
+            self._log_service.log("Testing connection to SSID: {}".format(configValue.ssid))
             self._wlan_sta.connect(configValue.ssid, configValue.password)
             connected = False
             for count in range(100):
                 status = self._wlan_sta.status()
-                if status == STAT_CONNECTING:
+                self._log_service.log("test status[{}]: {}".format(count, status))
+                if self._wlan_sta.isconnected() == True:
+                    connected = True
+                    self._log_service.log("test isconnected: {}".format(connected))
+                    break
+
+                if status == STAT_CONNECTING or status == STAT_CONNECTING_ALT:
                     time.sleep_ms(100)
                 else:
-                    connected = self._wlan_sta.isconnected()
+                    connected = False
+                    self._log_service.log("test isconnected: {}".format(connected))
                     break
 
             result = type("", (), {})()

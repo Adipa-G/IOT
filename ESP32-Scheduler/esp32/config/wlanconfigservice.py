@@ -16,26 +16,24 @@ class WLANConfigService:
         self._encryptionKey = bytes(wifiMac, "utf8")
 
     def write_config(self, ssid, password):
-        dataToWrite = (ssid + "\n" + password).encode()
-        encAlgo = ucryptolib.aes(self._encryptionKey, 1)
-        encrypted = encAlgo.encrypt(
-            dataToWrite + b" " * ((16 - (len(dataToWrite) % 16)) % 16)
-        )
-        f = None
         try:
-            f = open(PASSWORD_FILE, "w")
+            dataToWrite = (ssid + "\n" + password).encode()
+            encAlgo = ucryptolib.aes(self._encryptionKey, 1)
+            encrypted = encAlgo.encrypt(
+                dataToWrite + b" " * ((16 - (len(dataToWrite) % 16)) % 16)
+            )
+            f = open(PASSWORD_FILE, "wb")
             f.write(encrypted)
+            f.close()
+            self._log_service.log("wifi config saved ok")
         except Exception as e:
-            self._log_service.log("error writing wifi config " + str(e))
-        finally:
-            if f != None:
-                f.close()
+            self._log_service.log("error writing wifi config " + type(e).__name__ + ": " + str(e))
 
     def read_config(self):
         decAlgo = ucryptolib.aes(self._encryptionKey, 1)
         f = None
         try:
-            f = open(PASSWORD_FILE, "r")
+            f = open(PASSWORD_FILE, "rb")
             encrypted = f.read()
 
             decryptedData = decAlgo.decrypt(encrypted).decode("utf8").strip()
@@ -46,7 +44,7 @@ class WLANConfigService:
             return result
         except Exception as e:
             self._log_service.log(
-                "error reading wifi config or config does not exists " + str(e)
+                "error reading wifi config " + type(e).__name__ + ": " + str(e)
             )
         finally:
             if f != None:

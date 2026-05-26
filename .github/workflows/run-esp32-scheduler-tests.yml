@@ -1,0 +1,41 @@
+name: ESP32SchedulerTests
+run-name: Run ESP32 Scheduler Unit Tests
+on:
+  [push, workflow_dispatch]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      changed: ${{ steps.filter.outputs.path }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Detect if any files changed related to this build task
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            path:
+              - 'ESP32-Scheduler/**'
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  test-solution:
+    needs: changes
+    if: ${{ needs.changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install -r ESP32-Scheduler/esp32-tests/requirements.txt
+      - name: Test
+        run: |
+          cd ESP32-Scheduler
+          python -m pytest esp32-tests/ -v
+      - run: echo "🍏 This job's status is ${{ job.status }}."

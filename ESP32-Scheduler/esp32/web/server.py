@@ -6,7 +6,7 @@ import ioc.locator as locator
 
 
 class Server:
-    BUF_SIZE = const(1024)
+    BUF_SIZE = const(4096)
     PORT = const(80)
 
     def __init__(self, home):
@@ -36,24 +36,20 @@ class Server:
         try:
             request_data = await self.__get_request_data(reader)
             if request_data.method == "options":
-                await writer.awrite("HTTP/1.0 204\n")
-                await writer.awrite("Content-Type: application/json\n")
-                await writer.awrite("Access-Control-Allow-Origin: *\n")
                 await writer.awrite(
+                    "HTTP/1.0 204\nContent-Type: application/json\n"
+                    "Access-Control-Allow-Origin: *\n"
                     "Access-Control-Allow-Methods: POST, GET, OPTIONS\n"
-                )
-                await writer.awrite(
                     "Access-Control-Allow-Headers: Authorization, Content-Type\n"
+                    "Access-Control-Max-Age: 60\n\n"
                 )
-                await writer.awrite("Access-Control-Max-Age: 60\n")
-                await writer.awrite("\n")
             elif "/api/" in request_data.path:
                 try:
                     result = self.api_service.handle(request_data)
-                    await writer.awrite("HTTP/1.0 " + result["status"] + "\n")
-                    await writer.awrite("Content-Type: application/json\n")
-                    await writer.awrite("Access-Control-Allow-Origin: *\n")
-                    await writer.awrite("\n")
+                    await writer.awrite(
+                        "HTTP/1.0 " + result["status"] + "\n"
+                        "Content-Type: application/json\nAccess-Control-Allow-Origin: *\n\n"
+                    )
                     if result["result"] != None:
                         await writer.awrite(ujson.dumps(result["result"]))
                 except Exception as api_error:
@@ -63,25 +59,28 @@ class Server:
             else:
                 path = "/index.html" if request_data.path == "/" else request_data.path
                 try:
-                    f = open(self.home + path, "r")
-                    content = f.read(BUF_SIZE)
+                    import gc
+                    gc.collect()
+                    f = open(self.home + path, "rb")
+                    content = f.read(self.BUF_SIZE)
 
-                    await writer.awrite("HTTP/1.0 200 OK\n")
+                    headers = "HTTP/1.0 200 OK\n"
                     if path.endswith(".gz"):
-                        await writer.awrite("Content-Encoding: gzip\n")
+                        headers += "Content-Encoding: gzip\n"
                     if path.find(".css") != -1:
-                        await writer.awrite("Content-Type: text/css\n")
-                    if path.find(".js") != -1:
-                        await writer.awrite("Content-Type: text/javascript\n")
-                    if path.find(".html") != -1:
-                        await writer.awrite("Content-Type: text/html\n")
-                    await writer.awrite("\n")
+                        headers += "Content-Type: text/css\n"
+                    elif path.find(".js") != -1:
+                        headers += "Content-Type: text/javascript\n"
+                    elif path.find(".html") != -1:
+                        headers += "Content-Type: text/html\n"
+                    headers += "\n"
+                    await writer.awrite(headers)
 
                     while True:
                         await writer.awrite(content)
-                        if len(content) < BUF_SIZE:
+                        if len(content) < self.BUF_SIZE:
                             break
-                        content = f.read(BUF_SIZE)
+                        content = f.read(self.BUF_SIZE)
                     f.close()
 
                 except OSError as io_error:
@@ -90,14 +89,14 @@ class Server:
                     await writer.awrite("\n")
             await writer.wait_closed()
         except Exception as catch_all:
-            self.log_service.log("failed to handle request " + str(catch_all))
+            self.log_service.log("failed to handle request " + type(catch_all).__name__ + ": " + str(catch_all))
 
     async def __get_request_data(self, reader):
         requst = list()
         while True:
-            data = await reader.read(BUF_SIZE)
+            data = await reader.read(self.BUF_SIZE)
             requst.append(data)
-            if len(data) < BUF_SIZE:
+            if len(data) < self.BUF_SIZE:
                 break
 
         requst_str = (b"".join(requst)).decode("utf8")
