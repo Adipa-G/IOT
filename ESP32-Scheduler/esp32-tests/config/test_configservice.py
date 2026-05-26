@@ -1,7 +1,7 @@
 import json
 from unittest.mock import MagicMock, mock_open, patch, call
 
-from config.configservice import ConfigService
+from esp_config.configservice import ConfigService
 
 
 def make_service():

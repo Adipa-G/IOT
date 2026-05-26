@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 from types import SimpleNamespace
 
-from dns.server import Server
+from esp_dns.server import Server
 
 
 def _make_server(ip_address=None):

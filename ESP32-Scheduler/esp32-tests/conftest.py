@@ -13,6 +13,17 @@ from unittest.mock import MagicMock
 # ---------------------------------------------------------------------------
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "esp32"))
 
+
+def _register_source_alias(alias, package_dir):
+    pkg = types.ModuleType(alias)
+    pkg.__path__ = [os.path.join(os.path.dirname(__file__), "..", "esp32", package_dir)]
+    sys.modules[alias] = pkg
+
+
+# Avoid import collisions with test package names (esp32-tests/config, esp32-tests/dns)
+_register_source_alias("esp_config", "config")
+_register_source_alias("esp_dns", "dns")
+
 # ---------------------------------------------------------------------------
 # 2. MicroPython module aliases — must happen before any ESP32 imports
 # ---------------------------------------------------------------------------
