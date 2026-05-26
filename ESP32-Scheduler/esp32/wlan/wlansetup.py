@@ -1,12 +1,14 @@
-import random
 import time
 import uasyncio
+import ubinascii
+import network
 from micropython import const
 
 FONT_LEFT = const(5)
 WIFI_RECONNECT_CYCLES = const(10)
 STAT_CONNECTING = const(1)
 STAT_CONNECTING_ALT = const(1001)
+STAT_IDLE = const(1000)
 _WHITE = const(0xFFFF)
 
 
@@ -28,8 +30,11 @@ class WLANSetup:
 
         configValue = self._wlan_config.read_config()
         if force == True or configValue == None:
-            wifiName = "net_" + str(random.getrandbits(20))
-            wifiPass = str(random.getrandbits(26) % 100000000 + 100000000)
+            mac = ubinascii.hexlify(network.WLAN().config("mac")).decode()
+            deviceSuffix = mac[-6:]   # last 3 MAC bytes as 6 hex chars, used in SSID
+            passSuffix = mac[-8:]     # last 4 MAC bytes as 8 hex chars for password
+            wifiName = "esp-setup-" + deviceSuffix
+            wifiPass = passSuffix[:4] + "-" + passSuffix[4:]  # e.g. "ddee-ffgg" (9 chars, ≥8 WPA2 min)
 
             if self._wlan_ap.active() == True:
                 return
@@ -80,7 +85,7 @@ class WLANSetup:
                     self._log_service.log("isconnected: {}".format(connected))
                     break
 
-                if status == STAT_CONNECTING or status == STAT_CONNECTING_ALT:
+                if status == STAT_CONNECTING or status == STAT_CONNECTING_ALT or status == STAT_IDLE:
                     time.sleep_ms(100)
                 else:
                     connected = False
@@ -112,18 +117,19 @@ class WLANSetup:
         return False
 
     def test_wlan_config(self):
-        self._wlan_sta.active(False)
         configValue = self._wlan_config.read_config()
         self._log_service.log("test_wlan_config: ssid=" + str(getattr(configValue, 'ssid', None)))
         result = type("", (), {})()
         result.connected = False
 
         if configValue != None:
-            self._wlan_sta.active(True)
-            try:
-                self._wlan_sta.disconnect()
-            except:
-                pass
+            if self._wlan_sta.active():
+                try:
+                    self._wlan_sta.disconnect()
+                except:
+                    pass
+            else:
+                self._wlan_sta.active(True)
             self._log_service.log("Testing connection to SSID: {}".format(configValue.ssid))
             self._wlan_sta.connect(configValue.ssid, configValue.password)
             connected = False
@@ -135,7 +141,7 @@ class WLANSetup:
                     self._log_service.log("test isconnected: {}".format(connected))
                     break
 
-                if status == STAT_CONNECTING or status == STAT_CONNECTING_ALT:
+                if status == STAT_CONNECTING or status == STAT_CONNECTING_ALT or status == STAT_IDLE:
                     time.sleep_ms(100)
                 else:
                     connected = False

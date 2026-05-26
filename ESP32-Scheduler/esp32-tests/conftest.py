@@ -70,8 +70,17 @@ if not hasattr(gc, "mem_free"):
     gc.mem_free = lambda: 0
 
 # Pure stubs for hardware/ESP32-only modules
-for _mod in ("machine", "network", "ntptime", "esp32", "ucryptolib", "usocket", "ussl"):
+for _mod in ("machine", "ntptime", "esp32", "ucryptolib", "usocket", "ussl"):
     sys.modules[_mod] = MagicMock()
+
+# network stub — WLAN().config('mac') must return a real bytes value so MAC-derived
+# AP credentials are deterministic in tests: last 3 bytes = ddeeff
+_MOCK_MAC = b'\xaa\xbb\xcc\xdd\xee\xff'
+_mock_wlan_instance = MagicMock()
+_mock_wlan_instance.config = lambda key: _MOCK_MAC if key == 'mac' else None
+_mock_network = MagicMock()
+_mock_network.WLAN.return_value = _mock_wlan_instance
+sys.modules['network'] = _mock_network
 
 # ---------------------------------------------------------------------------
 # 3. Locator reset fixture — isolates each test

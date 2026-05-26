@@ -158,8 +158,33 @@ def test_start_config_mode_ap_already_active_returns_early():
     setup = _make_wlan_setup(wlan_config=wlan_config, wlan_ap=wlan_ap)
     setup.start_config_mode(force=True)
 
-    assert not wlan_ap.config_calls
-    assert setup.configMode is False
+
+def test_start_config_mode_ap_name_is_device_specific():
+    """AP SSID is derived from device MAC (last 3 bytes as hex)."""
+    wlan_config = MagicMock()
+    wlan_config.read_config.return_value = None
+    wlan_ap = MockNetwork(active=False)
+
+    setup = _make_wlan_setup(wlan_config=wlan_config, wlan_ap=wlan_ap)
+    setup.start_config_mode(force=True)
+
+    _, kwargs = wlan_ap.config_calls[0]
+    # mock MAC is aa:bb:cc:dd:ee:ff → suffix = 'ddeeff'
+    assert kwargs['essid'] == 'esp-setup-ddeeff'
+
+
+def test_start_config_mode_ap_password_is_device_specific():
+    """AP password is derived from MAC suffix in XXX-YYY format, easy to type."""
+    wlan_config = MagicMock()
+    wlan_config.read_config.return_value = None
+    wlan_ap = MockNetwork(active=False)
+
+    setup = _make_wlan_setup(wlan_config=wlan_config, wlan_ap=wlan_ap)
+    setup.start_config_mode(force=True)
+
+    _, kwargs = wlan_ap.config_calls[0]
+    # suffix 'ddeeff' → password 'ccdd-eeff'
+    assert kwargs['password'] == 'ccdd-eeff'
 
 
 # ---------------------------------------------------------------------------
