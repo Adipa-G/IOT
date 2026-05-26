@@ -78,3 +78,52 @@ class MockPinFactory:
     def get_adc(self, pin_no):
         """Retrieve the MockADC created for a given pin number."""
         return self._pins.get((pin_no, "adc"))
+
+
+class MockSystem:
+    """Simulates machine.freq() and machine.deepsleep()."""
+
+    def __init__(self, cpu_freq=240_000_000):
+        self._cpu_freq = cpu_freq
+        self.set_freq_calls = []
+        self.deep_sleep_calls = []
+
+    def get_cpu_freq(self):
+        return self._cpu_freq
+
+    def set_cpu_freq(self, freq):
+        self._cpu_freq = freq
+        self.set_freq_calls.append(freq)
+
+    def deep_sleep(self, duration_ms):
+        self.deep_sleep_calls.append(duration_ms)
+
+
+class MockNetwork:
+    """Simulates network.WLAN — tracks active() calls."""
+
+    def __init__(self, connected=False):
+        self._active = True
+        self._connected = connected
+        self.active_calls = []
+
+    def active(self, v=None):
+        self.active_calls.append(v)
+        if v is not None:
+            self._active = v
+        return self._active
+
+    def connect(self, ssid, password):
+        pass
+
+    def isconnected(self):
+        return self._connected
+
+    def ifconfig(self):
+        return ("192.168.1.1", "255.255.255.0", "192.168.1.1", "8.8.8.8")
+
+    def scan(self):
+        return []
+
+    def disconnect(self):
+        pass

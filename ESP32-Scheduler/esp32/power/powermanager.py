@@ -1,29 +1,45 @@
-import machine
-import network
-import utime
 import time
 import uasyncio
 from micropython import const
-
-import ioc.locator as locator
 
 POWER_MANAGEMENT_CYCLES = const(10)
 
 
 class PowerManager:
-    def __init__(self):
+    def __init__(
+        self,
+        battery_voltage,
+        power_config_service,
+        screen,
+        system,
+        time_provider,
+        wlan_sta,
+        wlan_ap,
+        log_service,
+    ):
         self._screen_off = 0
         self._power_cycle = 0
-        self._battery_voltage = locator.battery_voltage
-        self._log_service = locator.log_service
-        self._power_config_service = locator.power_config_service
-        self._screen = locator.screen
+        self._battery_voltage = battery_voltage
+        self._log_service = log_service
+        self._power_config_service = power_config_service
+        self._screen = screen
+        self._system = system
+        self._time = time_provider
+        self._wlan_sta = wlan_sta
+        self._wlan_ap = wlan_ap
+        self._web_server = None
+        self._dns_server = None
         self._power_config = self._power_config_service.read_config()
+
+    def set_server_refs(self, web_server, dns_server):
+        """Called after web_server and dns_server are created to complete wiring."""
+        self._web_server = web_server
+        self._dns_server = dns_server
 
     async def manage_power(self):
         voltage = self._battery_voltage.get_voltage()
         if voltage > 0:
-            freq = machine.freq()
+            freq = self._system.get_cpu_freq()
             self.__manage_screen()
             if self._power_cycle == POWER_MANAGEMENT_CYCLES:
                 self._power_cycle = 0
@@ -51,17 +67,17 @@ class PowerManager:
             target_freq = self._power_config["highBattery.cpuFreqMHz"] * 1000000
             if freq != target_freq:
                 self._log_service.log("high power - voltage: " + str(voltage) + "V")
-                machine.freq(target_freq)
+                self._system.set_cpu_freq(target_freq)
         elif voltage > self._power_config["mediumBattery.minVoltage"]:
             target_freq = self._power_config["mediumBattery.cpuFreqMHz"] * 1000000
             if freq != target_freq:
                 self._log_service.log("med power - voltage: " + str(voltage) + "V")
-                machine.freq(target_freq)
+                self._system.set_cpu_freq(target_freq)
         else:
             target_freq = self._power_config["lowBattery.cpuFreqMHz"] * 1000000
             if freq != target_freq:
                 self._log_service.log("low power - voltage: " + str(voltage) + "V")
-                machine.freq(target_freq)
+                self._system.set_cpu_freq(target_freq)
 
     def __sleep_when_low_power(self, voltage):
         if voltage < self._power_config["lowBattery.minVoltage"]:
@@ -87,7 +103,7 @@ class PowerManager:
         end_hour = int(tokens[2])
         end_minute = int(tokens[3])
 
-        localtime = utime.localtime()
+        localtime = self._time.localtime()
         hour = localtime[3]
         minute = localtime[4]
 
@@ -115,18 +131,12 @@ class PowerManager:
             self.__deep_sleep(time_to_sleep)
 
     def __deep_sleep(self, duration):
-        sta_if = network.WLAN(network.STA_IF)
-        ap_if = network.WLAN(network.AP_IF)
-        screen = locator.screen
-        web_server = locator.web_server
-        dns_server = locator.dns_server
-
-        web_server.stop()
-        dns_server.stop()
-        screen.turn_off_screen()
-
-        sta_if.active(False)
-        ap_if.active(False)
+        if self._web_server is not None:
+            self._web_server.stop()
+        if self._dns_server is not None:
+            self._dns_server.stop()
+        self._screen.turn_off_screen()
+        self._wlan_sta.active(False)
+        self._wlan_ap.active(False)
         time.sleep_ms(3000)
-
-        machine.deepsleep(duration)
+        self._system.deep_sleep(duration)

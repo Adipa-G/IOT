@@ -31,6 +31,9 @@ class LocatorInit:
         )
         locator.hal = micropython_hal.MicropythonPinFactory()
         locator.time_provider = micropython_hal.MicropythonTime()
+        locator.system = micropython_hal.MicropythonSystem()
+        locator.wlan_sta = micropython_hal.make_sta_wlan()
+        locator.wlan_ap = micropython_hal.make_ap_wlan()
         locator.battery_voltage = batteryvoltage.BatteryVoltage(
             locator.kalman_filter,
             locator.power_config_service,
@@ -43,8 +46,18 @@ class LocatorInit:
             locator.time_provider,
             locator.log_service,
         )
-        locator.power_manager = powermanager.PowerManager()
+        locator.power_manager = powermanager.PowerManager(
+            locator.battery_voltage,
+            locator.power_config_service,
+            locator.screen,
+            locator.system,
+            locator.time_provider,
+            locator.wlan_sta,
+            locator.wlan_ap,
+            locator.log_service,
+        )
         locator.wlan_setup = wlansetup.WLANSetup()
         locator.dns_server = dns_server.Server()
         locator.api_service = apiservice.APIService()
         locator.web_server = web_server.Server("pub")
+        locator.power_manager.set_server_refs(locator.web_server, locator.dns_server)

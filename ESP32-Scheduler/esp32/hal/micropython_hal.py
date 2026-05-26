@@ -1,7 +1,6 @@
 import machine
 import network
 import utime
-
 from hal.interfaces import PinInterface, ADCInterface, NetworkInterface, TimeInterface, PinFactory
 
 
@@ -57,6 +56,25 @@ class MicropythonNetwork:
 class MicropythonTime:
     def localtime(self):
         return utime.localtime()
+
+
+class MicropythonSystem:
+    def get_cpu_freq(self):
+        return machine.freq()
+
+    def set_cpu_freq(self, freq):
+        machine.freq(freq)
+
+    def deep_sleep(self, duration_ms):
+        machine.deepsleep(duration_ms)
+
+
+def make_sta_wlan():
+    return MicropythonNetwork(network.WLAN(network.STA_IF))
+
+
+def make_ap_wlan():
+    return MicropythonNetwork(network.WLAN(network.AP_IF))
 
 
 class MicropythonPinFactory:

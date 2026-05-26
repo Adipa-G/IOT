@@ -64,8 +64,11 @@ def reset_locator():
     locator.power_config_service = None
     locator.power_manager = None
     locator.screen = None
+    locator.system = None
     locator.time_provider = None
     locator.web_server = None
+    locator.wlan_ap = None
     locator.wlan_config = None
     locator.wlan_setup = None
+    locator.wlan_sta = None
     yield
